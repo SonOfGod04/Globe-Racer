@@ -5,16 +5,19 @@ A fast-paced, browser-based geography trivia game inspired by Who Wants to Be a 
 No install. No dependencies. No build step. Just open the HTML file and play.
 
 **🎮 Play Now**
+
 Download/clone this repo.
 Open index.html in any modern browser (Chrome, Firefox, Safari, Edge).
 Click START RACE and go!
 Works fully offline — all game logic, styles, and audio are self-contained in a single HTML file.
 
 **✨ Features**
+
 20 questions, Easy → Expert — covering Africa, Asia, Europe, the Americas, the Middle East, and the Pacific.
 Millionaire-style prize ladder — from $100 up to $1,000,000, with guaranteed checkpoints at Question 5, 10, and 15.
 
-Three lifelines:
+**Three lifelines:**
+
 🔀 50/50 — removes two wrong answers
 ⏱️ +10 Seconds — extra time when the clock is tight
 💰 Walk Away — cash out your current winnings instead of risking it all
@@ -27,6 +30,7 @@ Local high-score leaderboard — top 10 scores saved in your browser via localSt
 Runs at a smooth 60fps — single requestAnimationFrame loop handles the timer, screen shake, and canvas particle effects; everything else uses lightweight CSS transitions.
 
 **🕹️ Controls**
+
 Action	Keyboard	Touch/Mouse
 Select answer	1 2 3 4 or A B C D	Tap the answer button
 Submit typed answer	Enter	Tap GO 🚀
@@ -38,6 +42,7 @@ Continue to next question	Enter	Tap Continue
 Start game	Enter / Space	Tap START RACE
 
 **🏆 Scoring & Reward System**
+
 Milestone	Reward Behavior
 Q1 – Q4	Build your winnings question by question
 Q5 (checkpoint)	Winnings locked in — a wrong answer after this drops you only to this level
@@ -49,6 +54,7 @@ Q16 – Q20	High-risk, high-reward — answer all 20 to become a World Champion
 If you answer incorrectly, you fall back to the last checkpoint you passed. You can also Walk Away at any time (after Q1) to bank your current winnings safely.
 
 **Titles earned based on performance:**
+
 🧳 Tourist — fewer than 5 correct
 🧭 Explorer — 5+ correct
 🗺️ Adventurer — 10+ correct
@@ -62,6 +68,7 @@ localStorage for persisting high scores and sound preference between sessions.
 Fully responsive layout — adapts from desktop to small mobile screens.
 
 **🌐 Browser Support**
+
 Tested and optimized for the latest versions of:
 
 Chrome / Edge (desktop & mobile)
