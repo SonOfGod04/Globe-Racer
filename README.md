@@ -1,17 +1,19 @@
-##🌍 Globe Racer — Geography Millionaire
+**🌍 Globe Racer — Geography Millionaire**
+
 A fast-paced, browser-based geography trivia game inspired by Who Wants to Be a Millionaire? — but racing you across the globe instead. Answer 20 questions that scale from easy to expert, learn fun cultural facts along the way, use lifelines to survive tough questions, and bank your winnings before it's too late.
 
 No install. No dependencies. No build step. Just open the HTML file and play.
 
-🎮 Play Now
+**🎮 Play Now**
 Download/clone this repo.
 Open index.html in any modern browser (Chrome, Firefox, Safari, Edge).
 Click START RACE and go!
 Works fully offline — all game logic, styles, and audio are self-contained in a single HTML file.
 
-✨ Features
+**✨ Features**
 20 questions, Easy → Expert — covering Africa, Asia, Europe, the Americas, the Middle East, and the Pacific.
 Millionaire-style prize ladder — from $100 up to $1,000,000, with guaranteed checkpoints at Question 5, 10, and 15.
+
 Three lifelines:
 🔀 50/50 — removes two wrong answers
 ⏱️ +10 Seconds — extra time when the clock is tight
@@ -23,7 +25,8 @@ Full keyboard + touch support — play comfortably on desktop or mobile.
 Pause, Resume, Restart, Game Over states — all instant, no reloads needed.
 Local high-score leaderboard — top 10 scores saved in your browser via localStorage.
 Runs at a smooth 60fps — single requestAnimationFrame loop handles the timer, screen shake, and canvas particle effects; everything else uses lightweight CSS transitions.
-🕹️ Controls
+
+**🕹️ Controls**
 Action	Keyboard	Touch/Mouse
 Select answer	1 2 3 4 or A B C D	Tap the answer button
 Submit typed answer	Enter	Tap GO 🚀
@@ -33,7 +36,8 @@ Walk away (cash out)	W	Tap Walk Away
 Pause / Resume	P or Esc	Tap ⏸ / ▶
 Continue to next question	Enter	Tap Continue
 Start game	Enter / Space	Tap START RACE
-🏆 Scoring & Reward System
+
+**🏆 Scoring & Reward System**
 Milestone	Reward Behavior
 Q1 – Q4	Build your winnings question by question
 Q5 (checkpoint)	Winnings locked in — a wrong answer after this drops you only to this level
@@ -44,7 +48,7 @@ Q15 (checkpoint)	Final safety net before the big leagues
 Q16 – Q20	High-risk, high-reward — answer all 20 to become a World Champion
 If you answer incorrectly, you fall back to the last checkpoint you passed. You can also Walk Away at any time (after Q1) to bank your current winnings safely.
 
-Titles earned based on performance:
+**Titles earned based on performance:**
 🧳 Tourist — fewer than 5 correct
 🧭 Explorer — 5+ correct
 🗺️ Adventurer — 10+ correct
@@ -56,47 +60,8 @@ Canvas API for particle effects (confetti, correct/incorrect bursts).
 Web Audio API for synthesized sound effects (no audio files needed).
 localStorage for persisting high scores and sound preference between sessions.
 Fully responsive layout — adapts from desktop to small mobile screens.
-📂 Project Structure
-text
 
-globe-racer/
-└── index.html   ← everything (HTML, CSS, JS) lives in this one file
-Since the entire game is self-contained in a single file, it's trivial to:
-
-Host on GitHub Pages, Netlify, Vercel, or any static file host
-Embed in an <iframe>
-Fork and customize the question bank
-✍️ Customizing / Adding Questions
-All questions live in the QUESTIONS array near the top of the <script> block. Each entry looks like:
-
-JavaScript
-
-{
-  continent: "Asia",
-  difficulty: "Medium",   // Easy | Medium | Hard | Expert
-  time: 18,               // seconds allowed
-  type: "mcq",            // "mcq" or "type"
-  q: "Which country is known as the 'Land of the Rising Sun'?",
-  options: ["China", "South Korea", "Japan", "Thailand"],
-  correct: 2,             // index of correct option (mcq only)
-  fact: "Japan got this nickname because, viewed from China, the sun appeared to rise from there."
-}
-For typing questions, use type: "type" and an accepted array of acceptable lowercase answers instead of options/correct:
-
-JavaScript
-
-{
-  continent: "Americas/Asia",
-  difficulty: "Expert",
-  time: 25,
-  type: "type",
-  q: "Type the name of the strait that separates Asia (Russia) from North America (Alaska).",
-  accepted: ["bering strait", "bering"],
-  fact: "The Bering Strait is only about 53 miles (85 km) wide."
-}
-The prize ladder values are defined separately in the LADDER array and can be adjusted independently of the question count (though the game is designed around exactly 20 questions).
-
-🌐 Browser Support
+**🌐 Browser Support**
 Tested and optimized for the latest versions of:
 
 Chrome / Edge (desktop & mobile)
