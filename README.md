@@ -1,4 +1,4 @@
-🌍 Globe Racer — Geography Millionaire
+##🌍 Globe Racer — Geography Millionaire
 A fast-paced, browser-based geography trivia game inspired by Who Wants to Be a Millionaire? — but racing you across the globe instead. Answer 20 questions that scale from easy to expert, learn fun cultural facts along the way, use lifelines to survive tough questions, and bank your winnings before it's too late.
 
 No install. No dependencies. No build step. Just open the HTML file and play.
