@@ -6,7 +6,7 @@ No install. No dependencies. No build step. Just open the HTML file and play.
 
 **🎮 Play Now**
 
-Download/clone this repo.
+Download/clone this repository.
 Open index.html in any modern browser (Chrome, Firefox, Safari, Edge).
 Click START RACE and go!
 Works fully offline — all game logic, styles, and audio are self-contained in a single HTML file.
