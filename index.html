@@ -2,1005 +2,714 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>🌍 Glober Racer — Geography Millionaire</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>🌍 Globe Racer — Geography Millionaire</title>
 <style>
-:root{
-  --bg:#0a0e27; --bg2:#121a3e; --card:rgba(255,255,255,.06); --card-b:rgba(255,255,255,.14);
-  --gold:#ffd166; --teal:#4cc9f0; --green:#06d6a0; --red:#ef476f; --text:#f1f5f9; --sub:#9aa5c7;
-  --easy:#06d6a0; --medium:#4cc9f0; --hard:#ffa94d; --expert:#ef476f;
-}
-*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-html,body{height:100%; margin:0; overflow:hidden; overscroll-behavior:none; touch-action:manipulation;}
-body{
-  font-family:"Segoe UI",system-ui,-apple-system,"Trebuchet MS",sans-serif;
-  background:radial-gradient(ellipse at top, var(--bg2), var(--bg) 70%);
-  color:var(--text); position:relative;
-}
-h1,h2,h3{margin:0; letter-spacing:.5px;}
-button{font-family:inherit; cursor:pointer;}
-.hidden{display:none !important;}
-
-/* starfield */
-#stars, #stars2{position:fixed; inset:-50px; pointer-events:none; z-index:0;}
-#stars{box-shadow:none;}
-
-#fx{position:fixed; inset:0; width:100vw; height:100vh; pointer-events:none; z-index:9999;}
-
-#shakeRoot{position:relative; width:100%; height:100%; z-index:1;}
-
-.screen{position:fixed; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center; padding:1rem; z-index:2;}
-.screen.active{display:flex;}
-
-/* ===== START SCREEN ===== */
-#screen-start .logo{font-size:clamp(2.2rem,7vw,4rem); font-weight:800; text-align:center;
-  background:linear-gradient(90deg,var(--gold),var(--teal)); -webkit-background-clip:text; background-clip:text; color:transparent;
-  animation:floaty 3s ease-in-out infinite;}
+:root{--bg:#0a0e27;--bg2:#121a3e;--card:rgba(255,255,255,.06);--card-b:rgba(255,255,255,.14);--gold:#ffd166;--teal:#4cc9f0;--green:#06d6a0;--red:#ef476f;--text:#f1f5f9;--sub:#9aa5c7;--easy:#06d6a0;--medium:#4cc9f0;--hard:#ffa94d;--expert:#ef476f}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none;touch-action:manipulation}
+body{font-family:"Segoe UI",system-ui,-apple-system,"Trebuchet MS",sans-serif;background:radial-gradient(ellipse at top,var(--bg2),var(--bg) 70%);color:var(--text);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+h2{margin:0}button{font-family:inherit;cursor:pointer}.hidden{display:none!important}
+#fx{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9999}
+#shakeRoot{position:relative;width:100%;height:100%}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+.screen.active{display:flex}
+.logo{font-size:clamp(2.2rem,7vw,4rem);font-weight:800;text-align:center;background:linear-gradient(90deg,var(--gold),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent;animation:floaty 3s ease-in-out infinite}
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-#screen-start .tagline{color:var(--sub); text-align:center; margin-top:.4rem; max-width:480px; font-size:clamp(.85rem,2.5vw,1rem);}
-.start-card{background:var(--card); border:1px solid var(--card-b); border-radius:20px; padding:1.6rem 2rem; margin-top:1.6rem; max-width:520px; width:100%; backdrop-filter:blur(10px);}
-.big-btn{
-  display:block; margin:1.2rem auto 0; padding:1rem 2.4rem; font-size:1.3rem; font-weight:800;
-  background:linear-gradient(135deg,var(--gold),#ffb703); color:#1a1200; border:none; border-radius:16px;
-  box-shadow:0 8px 0 #b5790a, 0 10px 20px rgba(0,0,0,.4); transition:transform .08s;
-}
-.big-btn:active{transform:translateY(6px); box-shadow:0 2px 0 #b5790a, 0 4px 10px rgba(0,0,0,.4);}
-.instructions{display:flex; flex-wrap:wrap; gap:.6rem; justify-content:center; margin-top:1rem; font-size:.8rem; color:var(--sub);}
-.key{display:inline-block; background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); border-radius:5px; padding:1px 7px; margin:0 2px; font-family:monospace; color:#fff;}
-@media (hover:none){ .key{display:none;} }
-.hs-mini{margin-top:1rem; font-size:.85rem;}
-.hs-mini-row{display:flex; justify-content:space-between; padding:.2rem 0; border-bottom:1px dashed rgba(255,255,255,.1);}
-.top-controls{position:absolute; top:12px; right:12px; display:flex; gap:.5rem;}
-.icon-btn{background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2); color:#fff; border-radius:10px; width:40px; height:40px; font-size:1.1rem; display:flex; align-items:center; justify-content:center;}
-
-/* ===== GAME SCREEN ===== */
-#screen-game{padding:0; justify-content:flex-start;}
-.game-header{display:flex; align-items:center; justify-content:space-between; padding:.6rem 1rem; gap:.5rem;}
-.hdr-left{display:flex; align-items:center; gap:.6rem;}
-.hdr-logo{font-weight:800; font-size:1rem; color:var(--gold);}
-.hdr-score{font-family:monospace; font-weight:700; font-size:1.1rem; background:var(--card); border:1px solid var(--card-b); border-radius:10px; padding:.35rem .8rem;}
-.hdr-right{display:flex; gap:.4rem;}
-
-.game-body{flex:1; width:100%; display:grid; grid-template-columns:200px 1fr; gap:.8rem; padding:0 .8rem; overflow:hidden; min-height:0;}
-@media (max-width:860px){ .game-body{grid-template-columns:1fr;} }
-
-.ladder-panel{background:var(--card); border:1px solid var(--card-b); border-radius:14px; padding:.5rem; overflow-y:auto; min-height:0;}
-.ladder-panel::-webkit-scrollbar{width:5px;} .ladder-panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2); border-radius:5px;}
-.ladder-item{display:flex; justify-content:space-between; padding:.3rem .55rem; border-radius:7px; font-family:monospace; font-size:.82rem; color:var(--sub); margin-bottom:1px;}
-.ladder-item.checkpoint{color:var(--teal); font-weight:700;}
-.ladder-item.current{background:linear-gradient(90deg,var(--gold),#ffb703); color:#1a1200; font-weight:800; transform:scale(1.04);}
-.ladder-item.done{color:var(--green);}
-
-@media (max-width:860px){
-  .ladder-panel{position:fixed; top:0; right:0; height:100%; width:220px; transform:translateX(100%); transition:transform .3s; z-index:50; border-radius:0; padding-top:3.5rem;}
-  .ladder-panel.open{transform:translateX(0);}
-}
-
-.question-col{display:flex; flex-direction:column; gap:.6rem; min-height:0; overflow:hidden;}
-
-.question-panel{background:var(--card); border:1px solid var(--card-b); border-radius:18px; padding:1rem 1.2rem; display:flex; flex-direction:column; gap:.7rem; flex:1; min-height:0; overflow-y:auto; position:relative;}
-.q-meta{display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.4rem;}
-.q-progress{font-size:.78rem; color:var(--sub); font-weight:600;}
-.diff-badge{font-size:.72rem; font-weight:800; padding:.2rem .6rem; border-radius:20px; text-transform:uppercase; letter-spacing:.5px;}
-.diff-easy{background:rgba(6,214,160,.18); color:var(--easy);}
-.diff-medium{background:rgba(76,201,240,.18); color:var(--medium);}
-.diff-hard{background:rgba(255,169,77,.18); color:var(--hard);}
-.diff-expert{background:rgba(239,71,111,.18); color:var(--expert);}
-
-.timer-bar-wrap{height:12px; background:rgba(255,255,255,.1); border-radius:8px; position:relative; margin-top:2px;}
-.timer-bar-fill{height:100%; border-radius:8px; width:100%; background:linear-gradient(90deg,var(--teal),var(--green)); transition:background-color .3s;}
-.timer-bar-fill.danger{background:linear-gradient(90deg,#ff6b6b,var(--red)); animation:pulseBar .5s infinite;}
-@keyframes pulseBar{0%,100%{opacity:1}50%{opacity:.6}}
-.timer-plane{position:absolute; top:-11px; font-size:1.1rem; transform:translateX(-50%); transition:left .1s linear;}
-
-.q-text{font-size:clamp(1.05rem,2.6vw,1.4rem); font-weight:700; line-height:1.4;}
-.q-continent{font-size:.78rem; color:var(--sub);}
-
-.answers-grid{display:grid; grid-template-columns:1fr 1fr; gap:.65rem;}
-@media (max-width:560px){ .answers-grid{grid-template-columns:1fr;} }
-.answer-btn{
-  position:relative; text-align:left; padding:.8rem .9rem; border-radius:12px; border:2px solid var(--card-b);
-  background:rgba(255,255,255,.04); color:#fff; font-size:.95rem; transition:transform .12s, background .2s, border-color .2s, opacity .3s;
-  display:flex; align-items:center; gap:.5rem;
-}
-.answer-btn .opt-letter{font-weight:800; color:var(--gold); min-width:1.2em;}
-.answer-btn:not(:disabled):hover{transform:translateY(-2px); border-color:var(--teal);}
-.answer-btn.selected{border-color:var(--gold); background:rgba(255,209,102,.12);}
-.answer-btn.correct{background:var(--green); border-color:var(--green); color:#063024; animation:pop .4s ease;}
-.answer-btn.wrong{background:var(--red); border-color:var(--red); animation:shakeSm .4s ease;}
-.answer-btn.removed{opacity:0; pointer-events:none; transform:scale(.85);}
-@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
-@keyframes shakeSm{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-7px)}40%,60%{transform:translateX(7px)}}
-
-.type-wrap{display:flex; flex-direction:column; gap:.6rem;}
-.type-track{position:relative; height:34px; background:rgba(255,255,255,.07); border-radius:20px; overflow:hidden;}
-.type-car{position:absolute; top:50%; left:0; transform:translate(-50%,-50%); font-size:1.4rem; transition:left .12s linear;}
-.type-row{display:flex; gap:.5rem;}
-#typeInput{flex:1; padding:.8rem 1rem; border-radius:12px; border:2px solid var(--card-b); background:rgba(255,255,255,.05); color:#fff; font-size:16px;}
-#typeInput.input-correct{border-color:var(--green); background:rgba(6,214,160,.15);}
-#typeInput.input-wrong{border-color:var(--red); background:rgba(239,71,111,.15);}
-#typeSubmit{padding:.8rem 1.1rem; border-radius:12px; border:none; background:linear-gradient(135deg,var(--gold),#ffb703); font-weight:800; color:#1a1200;}
-.type-reveal{font-size:.85rem; color:var(--teal); font-weight:700;}
-
-.fact-panel{background:rgba(255,255,255,.05); border-left:3px solid var(--teal); border-radius:8px; padding:.6rem .8rem; font-size:.82rem; color:var(--sub);}
-.continue-hint{text-align:center; font-size:.8rem; color:var(--sub); cursor:pointer;}
-.continue-btn{align-self:center; padding:.5rem 1.3rem; border-radius:20px; border:1px solid var(--gold); background:rgba(255,209,102,.12); color:var(--gold); font-weight:700; font-size:.85rem;}
-
-.fast-bonus{position:absolute; top:40%; left:50%; transform:translate(-50%,-50%) scale(0.5); font-size:1.6rem; font-weight:900; color:var(--gold); opacity:0; pointer-events:none; text-shadow:0 2px 8px rgba(0,0,0,.5); z-index:5;}
-.fast-bonus.show{animation:fastPop 1s ease forwards;}
-@keyframes fastPop{0%{opacity:0; transform:translate(-50%,-50%) scale(.4);}20%{opacity:1; transform:translate(-50%,-50%) scale(1.15);}70%{opacity:1; transform:translate(-50%,-60%) scale(1);}100%{opacity:0; transform:translate(-50%,-90%) scale(.9);}}
-
-.lifelines-row{display:flex; gap:.5rem; flex-wrap:wrap;}
-.life-btn{flex:1; min-width:100px; padding:.6rem .5rem; border-radius:12px; border:1px solid var(--card-b); background:rgba(255,255,255,.05); color:#fff; font-size:.78rem; font-weight:700; display:flex; flex-direction:column; align-items:center; gap:.15rem; transition:opacity .2s, transform .1s;}
-.life-btn:active{transform:scale(.96);}
-.life-btn:disabled{opacity:.3; pointer-events:none;}
-.life-btn .lf-icon{font-size:1.25rem;}
-
-.race-track{position:relative; height:46px; background:rgba(255,255,255,.05); border-radius:30px; margin:0; overflow:visible; border:1px solid var(--card-b);}
-.race-track-inner{position:relative; height:100%; margin:0 20px;}
-.checkpoint-flag{position:absolute; top:50%; transform:translate(-50%,-50%); font-size:1rem;}
-.race-vehicle{position:absolute; top:50%; left:0%; transform:translate(-50%,-50%); font-size:1.5rem; transition:left .7s cubic-bezier(.34,1.56,.64,1); filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));}
-
-/* ===== OVERLAYS ===== */
-.overlay{position:fixed; inset:0; background:rgba(5,8,20,.82); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; z-index:100; padding:1rem;}
-.overlay.active{display:flex;}
-.overlay-card{background:linear-gradient(160deg, rgba(20,26,56,.95), rgba(10,14,39,.95)); border:1px solid var(--card-b); border-radius:22px; padding:1.6rem 2rem; max-width:480px; width:100%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,.6); max-height:92vh; overflow-y:auto;}
-.overlay-card h2{font-size:1.6rem; margin-bottom:.3rem;}
-.go-amount{font-size:clamp(2rem,8vw,3rem); font-weight:900; font-family:monospace; margin:.5rem 0; background:linear-gradient(90deg,var(--gold),var(--teal)); -webkit-background-clip:text; background-clip:text; color:transparent;}
-.go-title{font-size:.95rem; color:var(--sub); margin-bottom:.4rem;}
-.trophy{font-size:2.6rem;}
-.go-correct-reveal{font-size:.85rem; color:var(--red); margin:.3rem 0;}
-.btn-row{display:flex; gap:.6rem; margin-top:1rem; flex-wrap:wrap; justify-content:center;}
-.ghost-btn{padding:.7rem 1.2rem; border-radius:14px; border:1px solid var(--card-b); background:rgba(255,255,255,.06); color:#fff; font-weight:700;}
-.gold-btn{padding:.7rem 1.4rem; border-radius:14px; border:none; background:linear-gradient(135deg,var(--gold),#ffb703); color:#1a1200; font-weight:800;}
-.name-row{display:flex; gap:.5rem; margin-top:1rem;}
-.name-row input{flex:1; padding:.6rem .8rem; border-radius:10px; border:1px solid var(--card-b); background:rgba(255,255,255,.07); color:#fff; font-size:16px;}
-.hs-table{margin-top:1rem; text-align:left; font-size:.82rem; max-height:180px; overflow-y:auto;}
-.hs-row{display:flex; justify-content:space-between; padding:.3rem .5rem; border-bottom:1px solid rgba(255,255,255,.07);}
-.hs-row span:first-child{color:var(--gold); font-weight:700; width:1.5em;}
-.hs-row span:nth-child(2){flex:1; padding:0 .5rem;}
-.hs-row span:last-child{font-family:monospace; font-weight:700;}
+.tagline{color:var(--sub);text-align:center;margin-top:.4rem;max-width:480px;font-size:clamp(.85rem,2.5vw,1rem)}
+.start-card{background:var(--card);border:1px solid var(--card-b);border-radius:20px;padding:1.4rem 2rem;margin-top:1.4rem;max-width:520px;width:100%;backdrop-filter:blur(10px)}
+.big-btn{display:block;margin:.4rem auto 0;padding:1rem 2.4rem;font-size:1.3rem;font-weight:800;background:linear-gradient(135deg,var(--gold),#ffb703);color:#1a1200;border:none;border-radius:16px;box-shadow:0 8px 0 #b5790a,0 10px 20px rgba(0,0,0,.4);transition:transform .08s}
+.big-btn:active{transform:translateY(6px);box-shadow:0 2px 0 #b5790a}
+.instructions{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-top:1rem;font-size:.8rem;color:var(--sub)}
+.key{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:5px;padding:1px 7px;margin:0 2px;font-family:monospace;color:#fff}
+@media (hover:none){.key{display:none}}
+.hs-mini{margin-top:1rem;font-size:.85rem}
+.hs-mini-row{display:flex;justify-content:space-between;padding:.2rem 0;border-bottom:1px dashed rgba(255,255,255,.1)}
+.top-controls{position:absolute;top:12px;right:12px}
+.icon-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:10px;width:40px;height:40px;font-size:1.1rem;display:flex;align-items:center;justify-content:center}
+#screen-game{padding:0;justify-content:flex-start}
+.game-header{width:100%;display:flex;align-items:center;justify-content:space-between;padding:.6rem 1rem;gap:.5rem}
+.hdr-logo{font-weight:800;font-size:1rem;color:var(--gold)}
+.hdr-score{font-family:monospace;font-weight:700;font-size:1.1rem;background:var(--card);border:1px solid var(--card-b);border-radius:10px;padding:.35rem .8rem}
+.hdr-right{display:flex;gap:.4rem}
+.game-body{flex:1;width:100%;display:grid;grid-template-columns:200px 1fr;gap:.8rem;padding:0 .8rem .8rem;overflow:hidden;min-height:0}
+@media (max-width:860px){.game-body{grid-template-columns:1fr}}
+.ladder-panel{background:var(--card);border:1px solid var(--card-b);border-radius:14px;padding:.5rem;overflow-y:auto;min-height:0}
+.ladder-item{display:flex;justify-content:space-between;padding:.3rem .55rem;border-radius:7px;font-family:monospace;font-size:.82rem;color:var(--sub);margin-bottom:1px}
+.ladder-item.checkpoint{color:var(--teal);font-weight:700}
+.ladder-item.current{background:linear-gradient(90deg,var(--gold),#ffb703);color:#1a1200;font-weight:800;transform:scale(1.04)}
+.ladder-item.done{color:var(--green)}
+@media (max-width:860px){.ladder-panel{position:fixed;top:0;right:0;height:100%;width:220px;transform:translateX(100%);transition:transform .3s;z-index:50;border-radius:0;padding-top:3.5rem;background:#0d1330}.ladder-panel.open{transform:translateX(0)}}
+.question-col{display:flex;flex-direction:column;gap:.6rem;min-height:0;overflow:hidden}
+.question-panel{background:var(--card);border:1px solid var(--card-b);border-radius:18px;padding:1rem 1.2rem;display:flex;flex-direction:column;gap:.7rem;flex:1;min-height:0;overflow-y:auto;position:relative}
+.q-meta{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4rem}
+.q-progress{font-size:.78rem;color:var(--sub);font-weight:600}
+.diff-badge{font-size:.72rem;font-weight:800;padding:.2rem .6rem;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+.diff-easy{background:rgba(6,214,160,.18);color:var(--easy)}.diff-medium{background:rgba(76,201,240,.18);color:var(--medium)}.diff-hard{background:rgba(255,169,77,.18);color:var(--hard)}.diff-expert{background:rgba(239,71,111,.18);color:var(--expert)}
+.timer-bar-wrap{height:12px;background:rgba(255,255,255,.1);border-radius:8px;position:relative;margin-top:2px}
+.timer-bar-fill{height:100%;border-radius:8px;width:100%;background:linear-gradient(90deg,var(--teal),var(--green))}
+.timer-bar-fill.danger{background:linear-gradient(90deg,#ff6b6b,var(--red));animation:pulseBar .5s infinite}
+@keyframes pulseBar{50%{opacity:.6}}
+.timer-plane{position:absolute;top:-11px;font-size:1.1rem;transform:translateX(-50%)}
+.q-text{font-size:clamp(1.05rem,2.6vw,1.4rem);font-weight:700;line-height:1.4}
+.q-continent{font-size:.78rem;color:var(--sub)}
+.answers-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}
+@media (max-width:560px){.answers-grid{grid-template-columns:1fr}}
+.answer-btn{text-align:left;padding:.8rem .9rem;border-radius:12px;border:2px solid var(--card-b);background:rgba(255,255,255,.04);color:#fff;font-size:.95rem;transition:transform .12s,background .2s,border-color .2s,opacity .3s;display:flex;align-items:center;gap:.5rem}
+.opt-letter{font-weight:800;color:var(--gold);min-width:1.2em}
+.answer-btn:not(:disabled):hover{transform:translateY(-2px);border-color:var(--teal)}
+.answer-btn.selected{border-color:var(--gold);background:rgba(255,209,102,.12)}
+.answer-btn.correct{background:var(--green);border-color:var(--green);color:#063024;animation:pop .4s ease}
+.answer-btn.correct .opt-letter{color:#063024}
+.answer-btn.wrong{background:var(--red);border-color:var(--red);animation:shakeSm .4s ease}
+.answer-btn.removed{opacity:0;pointer-events:none;transform:scale(.85)}
+@keyframes pop{50%{transform:scale(1.05)}}
+@keyframes shakeSm{20%,80%{transform:translateX(4px)}40%,60%{transform:translateX(-7px)}}
+.type-wrap{display:flex;flex-direction:column;gap:.6rem}
+.type-track{position:relative;height:34px;background:rgba(255,255,255,.07);border-radius:20px;overflow:hidden}
+.type-car{position:absolute;top:50%;left:0;transform:translate(-50%,-50%);font-size:1.4rem;transition:left .12s linear}
+.type-row{display:flex;gap:.5rem}
+#typeInput{flex:1;padding:.8rem 1rem;border-radius:12px;border:2px solid var(--card-b);background:rgba(255,255,255,.05);color:#fff;font-size:16px}
+#typeInput.input-correct{border-color:var(--green);background:rgba(6,214,160,.15)}#typeInput.input-wrong{border-color:var(--red);background:rgba(239,71,111,.15)}
+#typeSubmit{padding:.8rem 1.1rem;border-radius:12px;border:none;background:linear-gradient(135deg,var(--gold),#ffb703);font-weight:800;color:#1a1200}
+.type-reveal{font-size:.85rem;color:var(--teal);font-weight:700}
+.fact-panel{background:rgba(255,255,255,.05);border-left:3px solid var(--teal);border-radius:8px;padding:.6rem .8rem;font-size:.82rem;color:var(--sub)}
+.continue-btn{align-self:center;padding:.5rem 1.3rem;border-radius:20px;border:1px solid var(--gold);background:rgba(255,209,102,.12);color:var(--gold);font-weight:700;font-size:.85rem}
+.fast-bonus{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%) scale(.5);font-size:1.6rem;font-weight:900;color:var(--gold);opacity:0;pointer-events:none;text-shadow:0 2px 8px rgba(0,0,0,.5);z-index:5}
+.fast-bonus.show{animation:fastPop 1s ease forwards}
+@keyframes fastPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}70%{opacity:1;transform:translate(-50%,-60%) scale(1)}100%{opacity:0;transform:translate(-50%,-90%) scale(.9)}}
+.lifelines-row{display:flex;gap:.5rem;flex-wrap:wrap}
+.life-btn{flex:1;min-width:100px;padding:.6rem .5rem;border-radius:12px;border:1px solid var(--card-b);background:rgba(255,255,255,.05);color:#fff;font-size:.78rem;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:.15rem}
+.life-btn:disabled{opacity:.3;pointer-events:none}.lf-icon{font-size:1.25rem}
+.race-track{position:relative;height:46px;background:rgba(255,255,255,.05);border-radius:30px;border:1px solid var(--card-b);flex-shrink:0}
+.race-track-inner{position:relative;height:100%;margin:0 20px}
+.checkpoint-flag{position:absolute;top:50%;transform:translate(-50%,-50%);font-size:1rem}
+.race-vehicle{position:absolute;top:50%;left:0;transform:translate(-50%,-50%);font-size:1.5rem;transition:left .7s cubic-bezier(.34,1.56,.64,1),transform .3s;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+.overlay{position:fixed;inset:0;background:rgba(5,8,20,.82);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:100;padding:1rem}
+.overlay.active{display:flex}
+.overlay-card{background:linear-gradient(160deg,#141a38,#0a0e27);border:1px solid var(--card-b);border-radius:22px;padding:1.6rem 2rem;max-width:480px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6);max-height:92vh;overflow-y:auto}
+.go-amount{font-size:clamp(2rem,8vw,3rem);font-weight:900;font-family:monospace;margin:.5rem 0;background:linear-gradient(90deg,var(--gold),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+.go-title{font-size:.95rem;color:var(--sub);margin-bottom:.4rem}.trophy{font-size:2.6rem}
+.go-correct-reveal{font-size:.85rem;color:var(--red);margin:.3rem 0}
+.btn-row{display:flex;gap:.6rem;margin-top:1rem;flex-wrap:wrap;justify-content:center}
+.ghost-btn{padding:.7rem 1.2rem;border-radius:14px;border:1px solid var(--card-b);background:rgba(255,255,255,.06);color:#fff;font-weight:700}
+.gold-btn{padding:.7rem 1.4rem;border-radius:14px;border:none;background:linear-gradient(135deg,var(--gold),#ffb703);color:#1a1200;font-weight:800}
+.gold-btn:disabled{opacity:.6}
+.name-row{display:flex;gap:.5rem;margin-top:1rem}
+.name-row input{flex:1;padding:.6rem .8rem;border-radius:10px;border:1px solid var(--card-b);background:rgba(255,255,255,.07);color:#fff;font-size:16px}
+.hs-table{margin-top:1rem;text-align:left;font-size:.82rem;max-height:180px;overflow-y:auto}
+.hs-row{display:flex;justify-content:space-between;padding:.3rem .5rem;border-bottom:1px solid rgba(255,255,255,.07)}
+.hs-row span:first-child{color:var(--gold);font-weight:700;width:2em}.hs-row span:nth-child(2){flex:1;padding:0 .5rem}.hs-row span:last-child{font-family:monospace;font-weight:700}
 </style>
 </head>
 <body>
-
 <canvas id="fx"></canvas>
-<div id="stars"></div>
-
 <div id="shakeRoot">
-
-  <!-- START SCREEN -->
   <section class="screen active" id="screen-start">
-    <div class="top-controls">
-      <button class="icon-btn" id="muteBtnStart" title="Toggle Sound">🔊</button>
-    </div>
+    <div class="top-controls"><button class="icon-btn" id="muteBtnStart">🔊</button></div>
     <div class="logo">🌍 GLOBE RACER</div>
-    <div class="tagline">A Geography &amp; Culture Millionaire Challenge — race through 20 questions, from easy warm-ups to globe-trotting expert trivia!</div>
+    <div class="tagline">A Geography &amp; Culture Millionaire Challenge — 20 questions on capitals, flags, populations, currencies and more. Fresh questions every race! 🔀</div>
     <div class="start-card">
       <button class="big-btn" id="startBtn">▶ START RACE</button>
       <div class="instructions">
         <span><span class="key">A</span><span class="key">B</span><span class="key">C</span><span class="key">D</span> or <span class="key">1-4</span> answer</span>
-        <span><span class="key">F</span> 50/50</span>
-        <span><span class="key">T</span> +10s</span>
-        <span><span class="key">W</span> walk away</span>
-        <span><span class="key">P</span> pause</span>
-        <span><span class="key">Enter</span> continue</span>
+        <span><span class="key">F</span> 50/50</span><span><span class="key">T</span> +10s</span><span><span class="key">W</span> walk away</span><span><span class="key">P</span> pause</span><span><span class="key">Enter</span> continue</span>
       </div>
-      <div class="hs-mini">
-        <strong>🏆 Top Scores</strong>
-        <div id="startHighScores"></div>
-      </div>
+      <div class="hs-mini"><strong>🏆 Top Scores</strong><div id="startHighScores"></div></div>
     </div>
   </section>
 
-  <!-- GAME SCREEN -->
   <section class="screen" id="screen-game">
     <div class="game-header">
-      <div class="hdr-left">
-        <span class="hdr-logo">🌍 GLOBE RACER</span>
-      </div>
+      <span class="hdr-logo">🌍 GLOBE RACER</span>
       <div class="hdr-score" id="hdrScore">$0</div>
       <div class="hdr-right">
-        <button class="icon-btn" id="ladderToggleBtn" title="Prize Ladder">🏆</button>
-        <button class="icon-btn" id="muteBtnGame" title="Sound">🔊</button>
-        <button class="icon-btn" id="pauseBtn" title="Pause (P)">⏸</button>
+        <button class="icon-btn" id="ladderToggleBtn">🏆</button>
+        <button class="icon-btn" id="muteBtnGame">🔊</button>
+        <button class="icon-btn" id="pauseBtn">⏸</button>
       </div>
     </div>
-
     <div class="game-body">
       <div class="ladder-panel" id="ladderPanel"></div>
-
       <div class="question-col">
         <div class="question-panel" id="questionPanel">
           <div class="fast-bonus" id="fastBonus"></div>
-          <div class="q-meta">
-            <div class="q-progress" id="qProgress">Question 1 / 20</div>
-            <div class="diff-badge" id="diffBadge">Easy</div>
-          </div>
-          <div class="timer-bar-wrap">
-            <div class="timer-bar-fill" id="timerFill"></div>
-            <div class="timer-plane" id="timerPlane">✈️</div>
-          </div>
+          <div class="q-meta"><div class="q-progress" id="qProgress"></div><div class="diff-badge" id="diffBadge"></div></div>
+          <div class="timer-bar-wrap"><div class="timer-bar-fill" id="timerFill"></div><div class="timer-plane" id="timerPlane">✈️</div></div>
           <div class="q-continent" id="qContinent"></div>
           <div class="q-text" id="qText"></div>
-
           <div id="mcqArea" class="answers-grid"></div>
-
           <div id="typeArea" class="type-wrap hidden">
             <div class="type-track"><div class="type-car" id="typeCar">🚗</div></div>
-            <div class="type-row">
-              <input id="typeInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type your answer...">
-              <button id="typeSubmit">GO 🚀</button>
-            </div>
+            <div class="type-row"><input id="typeInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type your answer..."><button id="typeSubmit">GO 🚀</button></div>
             <div class="type-reveal hidden" id="typeReveal"></div>
           </div>
-
           <div class="fact-panel hidden" id="factPanel"></div>
           <button class="continue-btn hidden" id="continueBtn">Continue ➜ (Enter)</button>
-
           <div class="lifelines-row">
             <button class="life-btn" id="lifeline-fifty"><span class="lf-icon">➗</span>50/50 <span class="key">F</span></button>
             <button class="life-btn" id="lifeline-time"><span class="lf-icon">⏱️</span>+10s <span class="key">T</span></button>
-            <button class="life-btn" id="lifeline-walk"><span class="lf-icon">💰</span><span id="walkLabel">Walk Away</span> <span class="key">W</span></button>
+            <button class="life-btn" id="lifeline-walk"><span class="lf-icon">💰</span>Walk Away <span class="key">W</span></button>
           </div>
         </div>
-
-        <div class="race-track">
-          <div class="race-track-inner" id="raceTrackInner">
-            <div class="race-vehicle" id="raceVehicle">✈️</div>
-          </div>
-        </div>
+        <div class="race-track"><div class="race-track-inner" id="raceTrackInner"><div class="race-vehicle" id="raceVehicle">✈️</div></div></div>
       </div>
     </div>
   </section>
 
-  <!-- PAUSE OVERLAY -->
-  <div class="overlay" id="overlayPause">
-    <div class="overlay-card">
-      <h2>⏸ Paused</h2>
-      <p style="color:var(--sub)">Take a breath, explorer.</p>
-      <div class="btn-row">
-        <button class="gold-btn" id="resumeBtn">▶ Resume</button>
-        <button class="ghost-btn" id="restartFromPauseBtn">🔄 Restart</button>
-        <button class="ghost-btn" id="menuFromPauseBtn">🏠 Menu</button>
-      </div>
-    </div>
-  </div>
+  <div class="overlay" id="overlayPause"><div class="overlay-card">
+    <h2>⏸ Paused</h2><p style="color:var(--sub)">Take a breath, explorer.</p>
+    <div class="btn-row"><button class="gold-btn" id="resumeBtn">▶ Resume</button><button class="ghost-btn" id="restartFromPauseBtn">🔄 Restart</button><button class="ghost-btn" id="menuFromPauseBtn">🏠 Menu</button></div>
+  </div></div>
 
-  <!-- GAME OVER OVERLAY -->
-  <div class="overlay" id="overlayGameOver">
-    <div class="overlay-card">
-      <div class="trophy" id="goTrophy">🧳</div>
-      <div class="go-title" id="goTitle">TOURIST</div>
-      <h2 id="goHeadline">Game Over</h2>
-      <div class="go-amount" id="goAmount">$0</div>
-      <div class="go-correct-reveal hidden" id="goCorrectReveal"></div>
-      <div class="name-row">
-        <input type="text" id="nameInput" maxlength="16" placeholder="Enter your name">
-        <button class="gold-btn" id="saveScoreBtn">Save</button>
-      </div>
-      <div class="hs-table" id="hsTable"></div>
-      <div class="btn-row">
-        <button class="gold-btn" id="restartBtn">🔄 Restart (Enter)</button>
-        <button class="ghost-btn" id="menuBtn">🏠 Menu</button>
-      </div>
-    </div>
-  </div>
-
+  <div class="overlay" id="overlayGameOver"><div class="overlay-card">
+    <div class="trophy" id="goTrophy">🧳</div><div class="go-title" id="goTitle">TOURIST</div>
+    <h2 id="goHeadline">Game Over</h2><div class="go-amount" id="goAmount">$0</div>
+    <div class="go-correct-reveal hidden" id="goCorrectReveal"></div>
+    <div class="name-row"><input type="text" id="nameInput" maxlength="16" placeholder="Enter your name"><button class="gold-btn" id="saveScoreBtn">Save</button></div>
+    <div class="hs-table" id="hsTable"></div>
+    <div class="btn-row"><button class="gold-btn" id="restartBtn">🔄 Play Again (Enter)</button><button class="ghost-btn" id="menuBtn">🏠 Menu</button></div>
+  </div></div>
 </div>
 
 <script>
 (function(){
 "use strict";
 
-/* ============================= DATA ============================= */
-const LADDER = [100,200,300,500,1000,2000,4000,8000,16000,32000,64000,125000,250000,400000,500000,600000,750000,800000,900000,1000000];
-const CHECKPOINTS = [5,10,15]; // completed-count checkpoints
+/* ===================== STORAGE ===================== */
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v);}catch(e){return d;}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+};
 
-const QUESTIONS = [
- {continent:"Africa", difficulty:"Easy", time:20, type:"mcq",
-  q:"Which continent is the Sahara Desert located on?",
-  options:["Asia","Africa","South America","Australia"], correct:1,
-  fact:"The Sahara is the largest hot desert in the world — roughly the size of the United States!"},
- {continent:"Europe", difficulty:"Easy", time:20, type:"mcq",
-  q:"What is the capital of France?",
-  options:["Berlin","Madrid","Paris","Rome"], correct:2,
-  fact:"Paris is nicknamed 'The City of Light,' partly for being an early adopter of street lighting."},
- {continent:"Asia", difficulty:"Easy", time:20, type:"mcq",
-  q:"The Great Wall is located in which country?",
-  options:["India","China","Japan","Mongolia"], correct:1,
-  fact:"Counting all its branches, the Great Wall of China stretches over 13,000 miles!"},
- {continent:"Africa", difficulty:"Easy", time:20, type:"mcq",
-  q:"Which river is traditionally considered the longest in the world?",
-  options:["Amazon","Nile","Yangtze","Mississippi"], correct:1,
-  fact:"The Nile flows northward and was central to the rise of ancient Egyptian civilization."},
- {continent:"North America", difficulty:"Easy", time:20, type:"mcq",
-  q:"The Statue of Liberty was a gift to the USA from which country?",
-  options:["United Kingdom","France","Spain","Italy"], correct:1,
-  fact:"The statue was shipped from France to New York in 350 separate pieces!"},
- {continent:"Asia", difficulty:"Medium", time:18, type:"mcq",
-  q:"Which country is known as the 'Land of the Rising Sun'?",
-  options:["China","South Korea","Japan","Thailand"], correct:2,
-  fact:"Japan got this nickname because, viewed from China, the sun appeared to rise from there."},
- {continent:"South America", difficulty:"Medium", time:18, type:"mcq",
-  q:"What is the official language of Brazil?",
-  options:["Spanish","Portuguese","French","Italian"], correct:1,
-  fact:"Brazil is the only Portuguese-speaking country in South America, a legacy of colonization."},
- {continent:"Africa", difficulty:"Medium", time:18, type:"mcq",
-  q:"Which African country was never formally colonized by a European power?",
-  options:["Kenya","Ethiopia","Nigeria","Ghana"], correct:1,
-  fact:"Ethiopia uses its own calendar, which currently runs about 7-8 years behind the Gregorian one!"},
- {continent:"Asia", difficulty:"Medium", time:18, type:"mcq",
-  q:"The Taj Mahal is located in which Indian city?",
-  options:["Delhi","Mumbai","Agra","Jaipur"], correct:2,
-  fact:"Emperor Shah Jahan built the Taj Mahal as a mausoleum for his wife, Mumtaz Mahal."},
- {continent:"Asia", difficulty:"Medium", time:18, type:"mcq",
-  q:"Which currency is used in Japan?",
-  options:["Yuan","Won","Yen","Ringgit"], correct:2,
-  fact:"The ¥ symbol is used for both the Japanese yen and Chinese yuan, though they're different currencies."},
- {continent:"Africa", difficulty:"Hard", time:16, type:"mcq",
-  q:"Mount Kilimanjaro, the highest peak in Africa, is located in which country?",
-  options:["Kenya","Tanzania","Uganda","Ethiopia"], correct:1,
-  fact:"Kilimanjaro is the tallest free-standing mountain in the world — it's not part of a range!"},
- {continent:"Europe", difficulty:"Hard", time:16, type:"mcq",
-  q:"Which country has the most time zones?",
-  options:["Russia","USA","France","China"], correct:2,
-  fact:"Thanks to overseas territories like French Polynesia, France spans 12 time zones!"},
- {continent:"Middle East", difficulty:"Hard", time:16, type:"mcq",
-  q:"The ancient city of Petra is located in which country?",
-  options:["Egypt","Jordan","Iraq","Syria"], correct:1,
-  fact:"Petra was carved directly into rose-colored sandstone cliffs over 2,000 years ago."},
- {continent:"Europe", difficulty:"Hard", time:16, type:"mcq",
-  q:"Which tiny country borders both France and Spain?",
-  options:["Portugal","Andorra","Monaco","Italy"], correct:1,
-  fact:"Andorra, nestled in the Pyrenees, has no airport — most visitors arrive by road."},
- {continent:"Asia", difficulty:"Hard", time:16, type:"mcq",
-  q:"Lake Baikal, the world's deepest lake, is located in which country?",
-  options:["Mongolia","China","Russia","Kazakhstan"], correct:2,
-  fact:"Lake Baikal holds about 20% of the world's unfrozen fresh water!"},
- {continent:"Africa", difficulty:"Expert", time:15, type:"mcq",
-  q:"Which country has three capital cities?",
-  options:["South Africa","Brazil","Canada","Australia"], correct:0,
-  fact:"South Africa splits power: Pretoria (executive), Cape Town (legislative), Bloemfontein (judicial)."},
- {continent:"Europe", difficulty:"Expert", time:15, type:"mcq",
-  q:"What is the smallest country in the world by land area?",
-  options:["Monaco","San Marino","Vatican City","Liechtenstein"], correct:2,
-  fact:"Vatican City is so small you could walk across it in about 20 minutes."},
- {continent:"Americas/Asia", difficulty:"Expert", time:25, type:"type",
-  q:"Type the name of the strait that separates Asia (Russia) from North America (Alaska).",
-  accepted:["bering strait","bering"],
-  fact:"The Bering Strait is only about 53 miles (85 km) wide."},
- {continent:"Pacific", difficulty:"Expert", time:25, type:"type",
-  q:"Type the ocean most associated with the volcanic 'Ring of Fire.'",
-  accepted:["pacific","pacific ocean","the pacific","pacific ocean "],
-  fact:"The Pacific's Ring of Fire contains about 75% of the world's active volcanoes."},
- {continent:"Central Asia", difficulty:"Expert", time:25, type:"type",
-  q:"Name one of the only two 'doubly landlocked' countries on Earth (hint: starts with U).",
-  accepted:["uzbekistan"],
-  fact:"Uzbekistan and Liechtenstein are the only two countries in the world surrounded entirely by other landlocked countries!"}
+/* ===================== QUESTION BANK ===================== */
+const LADDER=[100,200,300,500,1000,2000,4000,8000,16000,32000,64000,125000,250000,400000,500000,600000,750000,800000,900000,1000000];
+const CHECKPOINTS=[5,10,15];
+const TIME={easy:20,medium:18,hard:16,expert:15};
+
+// name(/aliases)|capital(/aliases)|continent|population (millions)|flag colours|currency|fame 1-3
+const RAW=`Nigeria|Abuja|Africa|223|green,white|Nigerian naira|1
+Ghana|Accra|Africa|34|red,yellow,green,black|Ghanaian cedi|1
+Kenya|Nairobi|Africa|55|red,black,green,white|Kenyan shilling|1
+Egypt|Cairo|Africa|112|red,white,black|Egyptian pound|1
+Ethiopia|Addis Ababa|Africa|126|green,yellow,red|Ethiopian birr|2
+Morocco|Rabat|Africa|37|red,green|Moroccan dirham|2
+Tanzania|Dodoma|Africa|67|green,yellow,black,blue|Tanzanian shilling|3
+Senegal|Dakar|Africa|18|green,yellow,red|West African CFA franc|3
+Algeria|Algiers|Africa|46|green,white,red|Algerian dinar|3
+Angola|Luanda|Africa|36|red,black,yellow|Angolan kwanza|3
+Uganda|Kampala|Africa|48|black,yellow,red,white|Ugandan shilling|3
+France|Paris|Europe|68|blue,white,red|Euro|1
+Germany|Berlin|Europe|84|black,red,yellow|Euro|1
+Italy|Rome|Europe|59|green,white,red|Euro|1
+Spain|Madrid|Europe|48|red,yellow|Euro|1
+United Kingdom/UK/Britain|London|Europe|68|red,white,blue|Pound sterling|1
+Poland|Warsaw|Europe|38|white,red|Polish zloty|2
+Sweden|Stockholm|Europe|10.5|blue,yellow|Swedish krona|2
+Norway|Oslo|Europe|5.5|red,white,blue|Norwegian krone|2
+Portugal|Lisbon|Europe|10.4|green,red|Euro|2
+Greece|Athens|Europe|10.4|blue,white|Euro|2
+Ireland|Dublin|Europe|5.3|green,white,orange|Euro|2
+Switzerland|Bern/Berne|Europe|8.8|red,white|Swiss franc|2
+Ukraine|Kyiv/Kiev|Europe|38|blue,yellow|Ukrainian hryvnia|2
+Netherlands|Amsterdam|Europe|17.9|red,white,blue|Euro|2
+Denmark|Copenhagen|Europe|5.9|red,white|Danish krone|2
+Finland|Helsinki|Europe|5.6|blue,white|Euro|2
+Hungary|Budapest|Europe|9.6|red,white,green|Hungarian forint|3
+Romania|Bucharest|Europe|19|blue,yellow,red|Romanian leu|3
+Iceland|Reykjavik|Europe|0.4|blue,white,red|Icelandic króna|3
+Croatia|Zagreb|Europe|3.9|red,white,blue|Euro|3
+China|Beijing|Asia|1410|red,yellow|Chinese yuan|1
+India|New Delhi/Delhi|Asia|1430|orange,white,green|Indian rupee|1
+Japan|Tokyo|Asia|124|white,red|Japanese yen|1
+South Korea|Seoul|Asia|52|white,red,blue,black|South Korean won|1
+Indonesia|Jakarta|Asia|277|red,white|Indonesian rupiah|2
+Pakistan|Islamabad|Asia|240|green,white|Pakistani rupee|2
+Bangladesh|Dhaka|Asia|173|green,red|Bangladeshi taka|2
+Thailand|Bangkok|Asia|72|red,white,blue|Thai baht|2
+Vietnam|Hanoi|Asia|99|red,yellow|Vietnamese dong|2
+Philippines|Manila|Asia|117|blue,red,white,yellow|Philippine peso|2
+Saudi Arabia|Riyadh|Asia|36|green,white|Saudi riyal|2
+Malaysia|Kuala Lumpur|Asia|34|red,white,blue,yellow|Malaysian ringgit|2
+Turkey|Ankara|Asia|85|red,white|Turkish lira|2
+Iran|Tehran|Asia|89|green,white,red|Iranian rial|3
+Nepal|Kathmandu|Asia|30|crimson,blue,white|Nepalese rupee|3
+Mongolia|Ulaanbaatar|Asia|3.4|red,blue,yellow|Mongolian tögrög|3
+Kazakhstan|Astana|Asia|20|blue,yellow|Kazakhstani tenge|3
+United States/USA/America|Washington D.C./Washington|North America|335|red,white,blue|US dollar|1
+Canada|Ottawa|North America|40|red,white|Canadian dollar|1
+Mexico|Mexico City|North America|129|green,white,red|Mexican peso|1
+Cuba|Havana|North America|11|red,white,blue|Cuban peso|2
+Jamaica|Kingston|North America|2.8|green,yellow,black|Jamaican dollar|3
+Brazil|Brasília|South America|216|green,yellow,blue,white|Brazilian real|1
+Argentina|Buenos Aires|South America|46|blue,white,yellow|Argentine peso|1
+Chile|Santiago|South America|19.6|blue,white,red|Chilean peso|2
+Peru|Lima|South America|34|red,white|Peruvian sol|2
+Colombia|Bogotá|South America|52|yellow,blue,red|Colombian peso|2
+Venezuela|Caracas|South America|28|yellow,blue,red|Venezuelan bolívar|3
+Australia|Canberra|Oceania|26|blue,red,white|Australian dollar|1
+New Zealand|Wellington|Oceania|5.2|blue,red,white|New Zealand dollar|2`;
+
+const COUNTRIES=RAW.split('\n').map(l=>{
+  const f=l.split('|'),nm=f[0].split('/'),cp=f[1].split('/');
+  return {n:nm[0],ns:nm,cap:cp[0],caps:cp,cont:f[2],pop:+f[3],flag:f[4].split(','),cur:f[5],fame:+f[6]};
+});
+const CONTINENTS=['Africa','Asia','Europe','North America','South America','Oceania'];
+const AMBIGUOUS=['Turkey','Kazakhstan'];
+
+// handpicked trivia: [tier, region, question, correct, "wrong|wrong|wrong", fact]
+const MCQ=[
+["easy","Africa","Which continent is the Sahara Desert located on?","Africa","Asia|South America|Australia","The Sahara is the largest hot desert in the world — roughly the size of the United States!"],
+["easy","Asia","The Great Wall is located in which country?","China","India|Japan|Mongolia","Counting all its branches, the Great Wall stretches over 13,000 miles!"],
+["easy","Africa","Which river is traditionally considered the longest in the world?","Nile","Amazon|Yangtze|Mississippi","The Nile flows northward and was central to ancient Egyptian civilization."],
+["easy","North America","The Statue of Liberty was a gift to the USA from which country?","France","United Kingdom|Spain|Italy","The statue was shipped from France to New York in 350 separate pieces!"],
+["easy","World","Which is the largest ocean on Earth?","Pacific Ocean","Atlantic Ocean|Indian Ocean|Arctic Ocean","The Pacific covers more area than all of Earth's land combined."],
+["easy","World","Which is the largest continent by area?","Asia","Africa|North America|Europe","Asia covers about 30% of Earth's land area."],
+["easy","Europe","Which country is shaped like a boot?","Italy","Spain|Greece|Portugal","Italy's 'boot' even appears to be kicking the island of Sicily!"],
+["easy","Oceania","In which country would you find kangaroos living in the wild?","Australia","New Zealand|South Africa|Brazil","Australia has more kangaroos than people."],
+["easy","Europe","Which is the largest country in the world by area?","Russia","Canada|China|United States","Russia spans 11 time zones."],
+["medium","Asia","Which country is known as the 'Land of the Rising Sun'?","Japan","China|South Korea|Thailand","Japan's name in Japanese, Nihon, literally means 'origin of the sun'."],
+["medium","South America","What is the official language of Brazil?","Portuguese","Spanish|French|Italian","Brazil is the only Portuguese-speaking country in South America."],
+["medium","Africa","Which of these African countries was never formally colonized?","Ethiopia","Kenya|Nigeria|Ghana","Ethiopia uses its own calendar, about 7-8 years behind the Gregorian one!"],
+["medium","Asia","The Taj Mahal is located in which Indian city?","Agra","Delhi|Mumbai|Jaipur","Shah Jahan built the Taj Mahal as a mausoleum for his wife, Mumtaz Mahal."],
+["medium","South America","Machu Picchu, the ancient Inca citadel, is in which country?","Peru","Chile|Bolivia|Ecuador","Machu Picchu sits about 2,430 m (7,970 ft) above sea level."],
+["medium","Oceania","The Great Barrier Reef lies off the coast of which country?","Australia","Fiji|Indonesia|New Zealand","It is the largest coral reef system on Earth and visible from space."],
+["medium","Europe","Which river is the longest in Europe?","Volga","Danube|Rhine|Seine","The Volga flows for about 3,530 km through Russia."],
+["medium","Africa","Victoria Falls lies on the border of Zambia and which other country?","Zimbabwe","Tanzania|Botswana|Malawi","Locals call it 'Mosi-oa-Tunya' — 'the smoke that thunders'."],
+["hard","Africa","Mount Kilimanjaro, Africa's highest peak, is located in which country?","Tanzania","Kenya|Uganda|Ethiopia","Kilimanjaro is the tallest free-standing mountain in the world."],
+["hard","Europe","Which country has the most time zones (including overseas territories)?","France","Russia|USA|China","Thanks to overseas territories, France spans 12 time zones!"],
+["hard","Middle East","The ancient city of Petra is located in which country?","Jordan","Egypt|Iraq|Syria","Petra was carved into rose-colored sandstone cliffs over 2,000 years ago."],
+["hard","Europe","Which tiny country borders both France and Spain?","Andorra","Portugal|Monaco|Italy","Andorra has no airport — most visitors arrive by road."],
+["hard","Asia","Lake Baikal, the world's deepest lake, is located in which country?","Russia","Mongolia|China|Kazakhstan","Lake Baikal holds about 20% of the world's unfrozen fresh water!"],
+["hard","Africa","Which African country has the largest population?","Nigeria","Ethiopia|Egypt|South Africa","Nigeria is home to over 220 million people."],
+["hard","Europe","The Strait of Gibraltar separates Spain from which African country?","Morocco","Algeria|Tunisia|Libya","At its narrowest the strait is only about 14 km wide."],
+["hard","Europe","Which country has the most islands in the world?","Sweden","Indonesia|Philippines|Canada","Sweden has over 260,000 islands!"],
+["hard","Africa","Lake Victoria is shared by Uganda, Kenya and which other country?","Tanzania","Rwanda|Ethiopia|Zambia","Lake Victoria is Africa's largest lake by area."],
+["expert","Africa","Which country has three capital cities?","South Africa","Brazil|Canada|Australia","Pretoria (executive), Cape Town (legislative), Bloemfontein (judicial)."],
+["expert","Europe","What is the smallest country in the world by land area?","Vatican City","Monaco|San Marino|Liechtenstein","You could walk across Vatican City in about 20 minutes."],
+["expert","South America","Which is the longest continental mountain range in the world?","The Andes","The Rockies|The Himalayas|The Alps","The Andes stretch about 7,000 km along South America's west coast."],
+["expert","Africa","Which country has the most official languages (16)?","Zimbabwe","South Africa|India|Switzerland","Zimbabwe recognizes 16 official languages, including sign language."],
+["expert","Africa","Which country is the world's largest producer of cocoa?","Côte d'Ivoire","Ghana|Nigeria|Brazil","Côte d'Ivoire supplies roughly 40% of the world's cocoa."],
+["expert","North America","Which country has the longest coastline in the world?","Canada","Russia|Indonesia|Australia","Canada's coastline stretches over 200,000 km."]
+];
+// typed: [region, question, "accepted|accepted", display answer, fact]
+const TYPED=[
+["Americas/Asia","Type the name of the strait that separates Russia from Alaska.","bering strait|bering","Bering Strait","The Bering Strait is only about 85 km wide."],
+["Pacific","Type the ocean most associated with the volcanic 'Ring of Fire'.","pacific|pacific ocean","Pacific Ocean","About 75% of the world's active volcanoes sit on the Ring of Fire."],
+["Central Asia","Name one of the two 'doubly landlocked' countries (hint: starts with U).","uzbekistan","Uzbekistan","Uzbekistan and Liechtenstein are the only doubly landlocked countries."],
+["World","Type the name of the largest island in the world (not a continent).","greenland","Greenland","Greenland is about 2.17 million km², mostly covered by ice."],
+["Africa","Type the name of the world's largest hot desert.","sahara|sahara desert","Sahara","The Sahara is roughly the size of the United States."],
+["Europe/Africa","Type the sea that separates southern Europe from North Africa.","mediterranean|mediterranean sea","Mediterranean Sea","'Mediterranean' means 'in the middle of the land'."],
+["Asia","Type the name of the highest mountain above sea level.","everest|mount everest","Mount Everest","Everest stands about 8,849 m tall on the Nepal–China border."],
+["South America","Type the name of the longest river in South America.","amazon|amazon river","Amazon","The Amazon discharges more water than any other river."],
+["Middle East","Type the river that flows through Baghdad.","tigris|tigris river","Tigris","The Tigris and Euphrates define ancient Mesopotamia."],
+["Africa","Type the largest country in Africa by area.","algeria","Algeria","Algeria is about 2.38 million km²."],
+["Asia","Type the desert that covers parts of Mongolia and northern China.","gobi|gobi desert","Gobi","Dinosaur fossils are found in the Gobi."]
 ];
 
-/* ============================= STATE ============================= */
-const STATE = {START:'start', PLAYING:'playing', PAUSED:'paused', ANSWERED:'answered', GAMEOVER:'gameover'};
-let state = STATE.START;
-let currentQuestionIndex = 0;
-let currentOptions = [];
-let selectedIndex = null;
-let usedFifty = false, usedExtra = false;
-let timer = {limit:20, remaining:20};
-let autoProceedTimer = null;
-let lastAnswerCorrect = false;
-let canProceed = false;
-let muted = localStorage.getItem('grMuted') === '1';
-
-/* ============================= DOM ============================= */
-const $ = id => document.getElementById(id);
-const shakeRoot = $('shakeRoot');
-const questionPanel = $('questionPanel');
-const mcqArea = $('mcqArea');
-const typeArea = $('typeArea');
-const typeInput = $('typeInput');
-const typeCar = $('typeCar');
-const typeReveal = $('typeReveal');
-const factPanel = $('factPanel');
-const continueBtn = $('continueBtn');
-const fastBonusEl = $('fastBonus');
-const timerFill = $('timerFill');
-const timerPlane = $('timerPlane');
-const ladderPanel = $('ladderPanel');
-const raceVehicle = $('raceVehicle');
-const raceTrackInner = $('raceTrackInner');
-
-/* ============================= UTIL ============================= */
-function fmt(n){ return '$' + n.toLocaleString('en-US'); }
-function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
-function normalize(s){ return s.toLowerCase().trim().replace(/^the\s+/,'').replace(/[^a-z\s]/g,'').replace(/\s+/g,' ').trim(); }
-function capitalize(s){ return s.replace(/\b\w/g, c=>c.toUpperCase()); }
-function switchScreen(name){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  $('screen-'+name).classList.add('active');
+/* ---------- helpers ---------- */
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+const pick3=a=>shuffle(a.slice()).slice(0,3);
+const cap1=s=>s.charAt(0).toUpperCase()+s.slice(1);
+function fmtPop(m){
+  if(m>=1000)return (m/1000).toFixed(2).replace(/0$/,'')+' billion';
+  if(m>=10)return Math.round(m)+' million';
+  if(m>=1)return m.toFixed(1)+' million';
+  return Math.round(m*1000)+' thousand';
 }
-function getTitleInfo(completedCount, won){
-  if(won) return {title:'WORLD CHAMPION', icon:'🏆'};
-  if(completedCount>=15) return {title:'GLOBETROTTER', icon:'🌍'};
-  if(completedCount>=10) return {title:'ADVENTURER', icon:'🗺️'};
-  if(completedCount>=5) return {title:'EXPLORER', icon:'🧭'};
-  return {title:'TOURIST', icon:'🧳'};
+const colourList=a=>a.length<2?a[0]:a.slice(0,-1).join(', ')+' and '+a[a.length-1];
+const info=c=>`${c.n}: capital ${c.cap}, population about ${fmtPop(c.pop)}, currency — ${c.cur}.`;
+const flagKey=c=>c.flag.slice().sort().join();
+
+/* ---------- build the candidate pool ---------- */
+const POOL=[];
+function add(id,key,tier,typed,build){POOL.push({id,key,tier,typed,build});}
+
+MCQ.forEach((m,i)=>add('s'+i,'s'+i,m[0],false,()=>({c:m[1],q:m[2],o:[m[3],...m[4].split('|')],f:m[5]})));
+TYPED.forEach((t,i)=>add('t'+i,'t'+i,'expert',true,()=>({c:t[0],q:t[1],a:t[2].split('|'),ans:t[3],f:t[4]})));
+
+COUNTRIES.forEach(c=>{
+  const others=COUNTRIES.filter(o=>o!==c);
+  const near=others.filter(o=>o.cont===c.cont);
+  const f=c.fame;
+  add('cap:'+c.n,c.n,{1:'easy',2:'medium',3:'hard'}[f],false,()=>{
+    const pool=near.filter(o=>o.cap!==c.cap);
+    return {c:c.cont,q:`What is the capital of ${c.n}?`,o:[c.cap,...pick3(pool.length>=3?pool:others).map(o=>o.cap)],f:info(c)};
+  });
+  add('rev:'+c.n,c.n,{1:'medium',2:'hard',3:'hard'}[f],false,()=>({
+    c:c.cont,q:`${c.cap} is the capital of which country?`,o:[c.n,...pick3(near.length>=3?near:others).map(o=>o.n)],f:info(c)}));
+  if(!AMBIGUOUS.includes(c.n))
+    add('cont:'+c.n,c.n,f===1?'easy':'medium',false,()=>({
+      c:'World',q:`Which continent is ${c.n} in?`,o:[c.cont,...pick3(CONTINENTS.filter(x=>x!==c.cont))],f:info(c)}));
+  add('cur:'+c.n,c.n,{1:'easy',2:'medium',3:'hard'}[f],false,()=>{
+    const cur=[...new Set(others.map(o=>o.cur).filter(x=>x!==c.cur))];
+    return {c:c.cont,q:`Which currency does ${c.n} use?`,o:[c.cur,...pick3(cur)],f:info(c)};
+  });
+  add('flag:'+c.n,c.n,{1:'medium',2:'hard',3:'expert'}[f],false,()=>{
+    const used=new Set([flagKey(c)]),w=[];
+    shuffle(others.slice()).forEach(o=>{if(w.length<3&&!used.has(flagKey(o))){used.add(flagKey(o));w.push(o.n);}});
+    return {c:'🚩 Flags',q:`Which country's flag uses exactly these main colours: ${colourList(c.flag)}?`,o:[c.n,...w],f:`${c.n}'s flag: ${colourList(c.flag)}. `+info(c)};
+  });
+  add('pop:'+c.n,c.n,{1:'hard',2:'hard',3:'expert'}[f],false,()=>{
+    const m=pick3([0.2,0.4,2.5,5]);
+    const o=[c.pop,...m.map(x=>c.pop*x)].map(v=>v>=10?Math.round(v):v>=1?+v.toFixed(1):+v.toFixed(2));
+    return {c:'👥 Population',q:`Roughly how many people live in ${c.n}?`,o:o.map(fmtPop),f:info(c)};
+  });
+  const smaller=others.filter(o=>o.pop*1.4<=c.pop);
+  if(smaller.length>=3)add('pmax:'+c.n,c.n,f===3?'hard':'medium',false,()=>({
+    c:'👥 Population',q:'Which of these countries has the LARGEST population?',o:[c.n,...pick3(smaller).map(o=>o.n)],f:info(c)}));
+  const bigger=others.filter(o=>o.pop>=c.pop*1.4);
+  if(bigger.length>=3)add('pmin:'+c.n,c.n,f===1?'hard':'expert',false,()=>({
+    c:'👥 Population',q:'Which of these countries has the SMALLEST population?',o:[c.n,...pick3(bigger).map(o=>o.n)],f:info(c)}));
+  if(f>=2){
+    add('capT:'+c.n,c.n,'expert',true,()=>({c:c.cont,q:`Type the capital city of ${c.n}.`,a:c.caps,ans:c.cap,f:info(c)}));
+    add('revT:'+c.n,c.n,'expert',true,()=>({c:c.cont,q:`Type the country whose capital is ${c.cap}.`,a:c.ns,ans:c.n,f:info(c)}));
+  }
+});
+
+/* ---------- deck builder: new random 20 each game, avoids recent repeats ---------- */
+function buildDeck(){
+  const seen=new Set(store.get('grSeen',[]));
+  const usedIds=new Set(),usedKeys=new Set(),deck=[];
+  for(let i=0;i<20;i++){
+    const tier=i<5?'easy':i<10?'medium':i<15?'hard':'expert', typed=i>=17;
+    const cands=POOL.filter(p=>p.tier===tier&&p.typed===typed&&!usedIds.has(p.id)&&!usedKeys.has(p.key));
+    let fresh=cands.filter(p=>!seen.has(p.id));
+    if(!fresh.length){cands.forEach(p=>seen.delete(p.id));fresh=cands;}
+    const p=rnd(fresh);
+    usedIds.add(p.id);usedKeys.add(p.key);seen.add(p.id);
+    const r=p.build();
+    deck.push({continent:r.c,difficulty:cap1(tier),time:typed?25:TIME[tier],type:typed?'type':'mcq',q:r.q,options:r.o,correct:0,accepted:r.a,ans:r.ans,fact:r.f});
+  }
+  store.set('grSeen',Array.from(seen).slice(-300));
+  return deck;
 }
 
-/* ============================= AUDIO ============================= */
+/* ===================== STATE ===================== */
+const STATE={START:'start',PLAYING:'playing',PAUSED:'paused',ANSWERED:'answered',GAMEOVER:'gameover'};
+let state=STATE.START,deck=[],currentQuestionIndex=0,currentOptions=[],selectedIndex=null;
+let usedFifty=false,usedExtra=false,timer={limit:20,remaining:20},autoProceedTimer=null;
+let lastAnswerCorrect=false,canProceed=false,prevState=null,finalCompleted=0;
+let muted=store.get('grMuted',false);
+
+const $=id=>document.getElementById(id);
+const shakeRoot=$('shakeRoot'),mcqArea=$('mcqArea'),typeArea=$('typeArea'),typeInput=$('typeInput'),typeCar=$('typeCar'),typeReveal=$('typeReveal');
+const factPanel=$('factPanel'),continueBtn=$('continueBtn'),fastBonusEl=$('fastBonus'),timerFill=$('timerFill'),timerPlane=$('timerPlane');
+const ladderPanel=$('ladderPanel'),raceVehicle=$('raceVehicle'),raceTrackInner=$('raceTrackInner');
+
+const fmt=n=>'$'+n.toLocaleString('en-US');
+function normalize(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/^the\s+/,'').replace(/[^a-z\s]/g,'').replace(/\s+/g,' ').trim();}
+function escapeHtml(str){const d=document.createElement('div');d.textContent=str;return d.innerHTML;}
+function switchScreen(n){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$('screen-'+n).classList.add('active');}
+function getTitleInfo(n,won){
+  if(won)return{title:'WORLD CHAMPION',icon:'🏆'};
+  if(n>=15)return{title:'GLOBETROTTER',icon:'🌍'};
+  if(n>=10)return{title:'ADVENTURER',icon:'🗺️'};
+  if(n>=5)return{title:'EXPLORER',icon:'🧭'};
+  return{title:'TOURIST',icon:'🧳'};
+}
+
+/* ===================== AUDIO ===================== */
 let audioCtx;
-function ensureAudio(){ if(!audioCtx){ try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } }
-function playTone(freq, dur=0.15, type='sine', vol=0.18){
-  if(muted) return; ensureAudio(); if(!audioCtx) return;
-  const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-  o.type=type; o.frequency.value=freq; g.gain.value=vol;
-  o.connect(g); g.connect(audioCtx.destination);
-  o.start();
-  g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+dur);
-  o.stop(audioCtx.currentTime+dur);
+function ensureAudio(){if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}}
+function playTone(f,d=.15,t='sine',v=.18){
+  if(muted)return;ensureAudio();if(!audioCtx)return;
+  const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type=t;o.frequency.value=f;g.gain.value=v;o.connect(g);g.connect(audioCtx.destination);o.start();
+  g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+d);o.stop(audioCtx.currentTime+d);
 }
-function sndClick(){ playTone(600,0.05,'square',0.1); }
-function sndCorrect(){ playTone(880,0.12,'sine',0.2); setTimeout(()=>playTone(1320,0.18,'sine',0.2),100); }
-function sndWrong(){ playTone(180,0.4,'sawtooth',0.22); }
-function sndTick(){ playTone(1000,0.04,'square',0.08); }
-function sndWin(){ [660,880,1100,1320].forEach((f,i)=>setTimeout(()=>playTone(f,0.25,'sine',0.22), i*140)); }
-function updateMuteIcons(){ const t = muted?'🔇':'🔊'; $('muteBtnStart').textContent=t; $('muteBtnGame').textContent=t; }
-function toggleMute(){ muted=!muted; localStorage.setItem('grMuted', muted?'1':'0'); updateMuteIcons(); }
+const sndClick=()=>playTone(600,.05,'square',.1);
+const sndCorrect=()=>{playTone(880,.12,'sine',.2);setTimeout(()=>playTone(1320,.18,'sine',.2),100);};
+const sndWrong=()=>playTone(180,.4,'sawtooth',.22);
+const sndTick=()=>playTone(1000,.04,'square',.08);
+const sndWin=()=>[660,880,1100,1320].forEach((f,i)=>setTimeout(()=>playTone(f,.25,'sine',.22),i*140));
+function updateMuteIcons(){const t=muted?'🔇':'🔊';$('muteBtnStart').textContent=t;$('muteBtnGame').textContent=t;}
+function toggleMute(){muted=!muted;store.set('grMuted',muted);updateMuteIcons();}
 
-/* ============================= PARTICLE FX ============================= */
-const fxCanvas = $('fx'), fxCtx = fxCanvas.getContext('2d');
-let particles = [];
-function resizeCanvas(){ fxCanvas.width = window.innerWidth; fxCanvas.height = window.innerHeight; }
-window.addEventListener('resize', resizeCanvas); resizeCanvas();
-const CONFETTI_COLORS = ['#ffd166','#06d6a0','#4cc9f0','#ef476f','#ffffff'];
-function spawnParticles(x,y,color,count=40,opts={}){
+/* ===================== FX ===================== */
+const fxCanvas=$('fx'),fxCtx=fxCanvas.getContext('2d');let particles=[];
+function resizeCanvas(){fxCanvas.width=innerWidth;fxCanvas.height=innerHeight;}
+addEventListener('resize',resizeCanvas);resizeCanvas();
+const COLORS=['#ffd166','#06d6a0','#4cc9f0','#ef476f','#ffffff'];
+function spawnParticles(x,y,color,count=40,o={}){
   for(let i=0;i<count;i++){
-    const angle = Math.random()*Math.PI*2;
-    const speed = opts.speed || (2+Math.random()*4);
-    particles.push({
-      x,y,
-      vx: Math.cos(angle)*speed,
-      vy: Math.sin(angle)*speed - (opts.burstUp?4:0),
-      g: opts.gravity ?? 0.15,
-      life:0, maxLife: opts.life || (40+Math.random()*25),
-      size: opts.size || (3+Math.random()*4),
-      color: color || CONFETTI_COLORS[Math.floor(Math.random()*CONFETTI_COLORS.length)],
-      rot: Math.random()*360, vr:(Math.random()*10-5)
-    });
+    const a=Math.random()*Math.PI*2,s=o.speed||(2+Math.random()*4);
+    particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-(o.burstUp?4:0),g:o.gravity??.15,life:0,maxLife:o.life||(40+Math.random()*25),size:3+Math.random()*4,color:color||rnd(COLORS),rot:Math.random()*360,vr:Math.random()*10-5});
   }
 }
-function burstAt(el, color, count){
-  if(!el) return;
-  const r = el.getBoundingClientRect();
-  spawnParticles(r.left+r.width/2, r.top+r.height/2, color, count, {burstUp:true, gravity:0.18});
-}
-function triggerWinConfetti(){
-  for(let i=0;i<6;i++){
-    setTimeout(()=>spawnParticles(Math.random()*window.innerWidth, -10, null, 35, {gravity:0.08, life:100, speed:2.5}), i*180);
-  }
-}
+function burstAt(el,color,count){if(!el)return;const r=el.getBoundingClientRect();spawnParticles(r.left+r.width/2,r.top+r.height/2,color,count,{burstUp:true,gravity:.18});}
+function winConfetti(){for(let i=0;i<6;i++)setTimeout(()=>spawnParticles(Math.random()*innerWidth,-10,null,35,{gravity:.08,life:100,speed:2.5}),i*180);}
 function updateParticles(dt){
-  const scale = Math.min(dt*60, 3);
-  fxCtx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
+  const sc=Math.min(dt*60,3);fxCtx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
   for(let i=particles.length-1;i>=0;i--){
-    const p = particles[i];
-    p.life += scale;
-    p.x += p.vx*scale; p.y += p.vy*scale; p.vy += p.g*scale; p.rot += p.vr*scale;
-    if(p.life >= p.maxLife){ particles.splice(i,1); continue; }
-    const alpha = Math.max(0, 1 - p.life/p.maxLife);
-    fxCtx.save();
-    fxCtx.translate(p.x,p.y);
-    fxCtx.rotate(p.rot*Math.PI/180);
-    fxCtx.globalAlpha = alpha;
-    fxCtx.fillStyle = p.color;
-    fxCtx.fillRect(-p.size/2,-p.size/2,p.size,p.size);
-    fxCtx.restore();
+    const p=particles[i];p.life+=sc;p.x+=p.vx*sc;p.y+=p.vy*sc;p.vy+=p.g*sc;p.rot+=p.vr*sc;
+    if(p.life>=p.maxLife){particles.splice(i,1);continue;}
+    fxCtx.save();fxCtx.translate(p.x,p.y);fxCtx.rotate(p.rot*Math.PI/180);fxCtx.globalAlpha=Math.max(0,1-p.life/p.maxLife);fxCtx.fillStyle=p.color;fxCtx.fillRect(-p.size/2,-p.size/2,p.size,p.size);fxCtx.restore();
   }
 }
-
-/* ============================= SCREEN SHAKE ============================= */
-let shakeTime=0, shakeDuration=0, shakeMagnitude=0;
-function triggerShake(mag, dur){ shakeMagnitude=mag; shakeDuration=dur; shakeTime=dur; }
+let shakeTime=0,shakeDur=0,shakeMag=0;
+function triggerShake(m,d){shakeMag=m;shakeDur=d;shakeTime=d;}
 function updateShake(dt){
-  if(shakeTime>0){
-    shakeTime -= dt;
-    const power = shakeMagnitude * Math.max(0, shakeTime/shakeDuration);
-    const dx = (Math.random()*2-1)*power, dy = (Math.random()*2-1)*power;
-    shakeRoot.style.transform = `translate(${dx}px,${dy}px)`;
-    if(shakeTime<=0) shakeRoot.style.transform = 'none';
-  }
+  if(shakeTime>0){shakeTime-=dt;const p=shakeMag*Math.max(0,shakeTime/shakeDur);
+    shakeRoot.style.transform=shakeTime<=0?'none':`translate(${(Math.random()*2-1)*p}px,${(Math.random()*2-1)*p}px)`;}
 }
 
-/* ============================= STARFIELD ============================= */
-(function generateStars(){
-  const stars = $('stars');
-  let shadows1=[], shadows2=[];
-  for(let i=0;i<120;i++){
-    shadows1.push(`${Math.random()*innerWidth}px ${Math.random()*innerHeight}px #fff`);
-  }
-  stars.style.width='2px'; stars.style.height='2px'; stars.style.borderRadius='50%';
-  stars.style.background='transparent';
-  stars.style.boxShadow = shadows1.join(',');
-  stars.style.opacity='0.5';
-})();
-
-/* ============================= HIGH SCORES ============================= */
-function loadScores(){ try{ return JSON.parse(localStorage.getItem('grScores')||'[]'); }catch(e){ return []; } }
-function saveScores(list){ localStorage.setItem('grScores', JSON.stringify(list)); }
-function addScore(name, amount, completedCount){
-  const list = loadScores();
-  list.push({name: name||'Player', amount, completedCount, date:new Date().toLocaleDateString()});
-  list.sort((a,b)=> b.amount-a.amount || b.completedCount-a.completedCount);
-  const trimmed = list.slice(0,10);
-  saveScores(trimmed);
-  return trimmed;
+/* ===================== HIGH SCORES ===================== */
+function addScore(name,amount,completed){
+  const list=store.get('grScores',[]);list.push({name,amount,completed});
+  list.sort((a,b)=>b.amount-a.amount||b.completed-a.completed);
+  store.set('grScores',list.slice(0,10));
 }
-function renderHighScoreTable(targetId){
-  const list = loadScores();
-  const el = $(targetId);
-  if(list.length===0){ el.innerHTML = '<div style="color:var(--sub); text-align:center; padding:.5rem;">No scores yet — be the first!</div>'; return; }
-  el.innerHTML = list.map((s,i)=>`<div class="hs-row"><span>#${i+1}</span><span>${escapeHtml(s.name)}</span><span>${fmt(s.amount)}</span></div>`).join('');
+function renderHS(id){
+  const list=store.get('grScores',[]),el=$(id);
+  el.innerHTML=list.length?list.map((s,i)=>`<div class="hs-row"><span>#${i+1}</span><span>${escapeHtml(s.name)}</span><span>${fmt(s.amount)}</span></div>`).join(''):'<div style="color:var(--sub);text-align:center;padding:.5rem">No scores yet — be the first!</div>';
 }
-function escapeHtml(str){ const d=document.createElement('div'); d.textContent=str; return d.innerHTML; }
-function renderStartHighScores(){ renderHighScoreTableMini(); }
-function renderHighScoreTableMini(){
-  const list = loadScores().slice(0,5);
-  const el = $('startHighScores');
-  if(list.length===0){ el.innerHTML = '<div style="color:var(--sub); text-align:center;">No scores yet. Start the race!</div>'; return; }
-  el.innerHTML = list.map((s,i)=>`<div class="hs-mini-row"><span>#${i+1} ${escapeHtml(s.name)}</span><span>${fmt(s.amount)}</span></div>`).join('');
+function renderStartHS(){
+  const list=store.get('grScores',[]).slice(0,5),el=$('startHighScores');
+  el.innerHTML=list.length?list.map((s,i)=>`<div class="hs-mini-row"><span>#${i+1} ${escapeHtml(s.name)}</span><span>${fmt(s.amount)}</span></div>`).join(''):'<div style="color:var(--sub);text-align:center">No scores yet. Start the race!</div>';
 }
 
-/* ============================= LADDER RENDER ============================= */
+/* ===================== LADDER / RACE ===================== */
 function renderLadder(){
-  let html = '';
+  let h='';
   for(let i=LADDER.length-1;i>=0;i--){
-    const qNum = i+1;
-    const isCheckpoint = CHECKPOINTS.includes(qNum);
-    const isCurrent = i === currentQuestionIndex;
-    const isDone = i < currentQuestionIndex;
-    html += `<div class="ladder-item ${isCheckpoint?'checkpoint':''} ${isCurrent?'current':''} ${isDone?'done':''}" data-i="${i}">
-      <span>${qNum}${isCheckpoint?' ★':''}</span><span>${fmt(LADDER[i])}</span>
-    </div>`;
+    const cp=CHECKPOINTS.includes(i+1);
+    h+=`<div class="ladder-item ${cp?'checkpoint':''} ${i===currentQuestionIndex?'current':''} ${i<currentQuestionIndex?'done':''}" data-i="${i}"><span>${i+1}${cp?' ★':''}</span><span>${fmt(LADDER[i])}</span></div>`;
   }
-  ladderPanel.innerHTML = html;
+  ladderPanel.innerHTML=h;
+}
+function updateRaceTrackMarkers(){
+  raceTrackInner.querySelectorAll('.checkpoint-flag').forEach(f=>f.remove());
+  CHECKPOINTS.concat([20]).forEach(cp=>{
+    const f=document.createElement('div');f.className='checkpoint-flag';f.textContent=cp===20?'🏁':'🚩';f.style.left=(cp/20*100)+'%';raceTrackInner.appendChild(f);
+  });
+}
+function moveRaceVehicle(idx,bump){
+  raceVehicle.style.left=(idx/20*100)+'%';
+  if(bump){raceVehicle.style.transform='translate(-50%,-70%) scale(1.3)';setTimeout(()=>{raceVehicle.style.transform='translate(-50%,-50%) scale(1)';},350);}
 }
 
-/* ============================= GAME FLOW ============================= */
+/* ===================== GAME FLOW ===================== */
 function initGame(){
-  currentQuestionIndex = 0;
-  usedFifty = false; usedExtra = false;
-  selectedIndex = null;
+  deck=buildDeck();
+  currentQuestionIndex=0;usedFifty=false;usedExtra=false;selectedIndex=null;
   switchScreen('game');
-  $('overlayGameOver').classList.remove('active');
-  $('overlayPause').classList.remove('active');
-  shakeRoot.style.transform = 'none';
-  updateRaceTrackMarkers();
-  moveRaceVehicle(0, false);
+  $('overlayGameOver').classList.remove('active');$('overlayPause').classList.remove('active');
+  shakeRoot.style.transform='none';
+  updateRaceTrackMarkers();moveRaceVehicle(0,false);
   loadQuestion(0);
 }
 
-function updateRaceTrackMarkers(){
-  // remove old flags
-  raceTrackInner.querySelectorAll('.checkpoint-flag').forEach(f=>f.remove());
-  CHECKPOINTS.concat([20]).forEach(cp=>{
-    const flag = document.createElement('div');
-    flag.className='checkpoint-flag';
-    flag.textContent = cp===20 ? '🏁' : '🚩';
-    flag.style.left = (cp/20*100)+'%';
-    raceTrackInner.appendChild(flag);
-  });
-}
-
-function moveRaceVehicle(idx, bump){
-  raceVehicle.style.left = (idx/20*100)+'%';
-  if(bump){
-    raceVehicle.style.transform = 'translate(-50%,-70%) scale(1.3)';
-    setTimeout(()=>{ raceVehicle.style.transform = 'translate(-50%,-50%) scale(1)'; }, 350);
-  }
-}
-
 function loadQuestion(idx){
-  state = STATE.PLAYING;
-  selectedIndex = null;
-  canProceed = false;
-  clearTimeout(autoProceedTimer);
-  const q = QUESTIONS[idx];
-
-  $('qProgress').textContent = `Question ${idx+1} / 20`;
-  const diffBadge = $('diffBadge');
-  diffBadge.textContent = q.difficulty;
-  diffBadge.className = 'diff-badge diff-' + q.difficulty.toLowerCase();
-  $('qContinent').textContent = '📍 ' + q.continent;
-  $('qText').textContent = q.q;
-
-  factPanel.classList.add('hidden'); factPanel.textContent='';
+  state=STATE.PLAYING;selectedIndex=null;canProceed=false;clearTimeout(autoProceedTimer);
+  const q=deck[idx];
+  $('qProgress').textContent=`Question ${idx+1} / 20`;
+  const db=$('diffBadge');db.textContent=q.difficulty;db.className='diff-badge diff-'+q.difficulty.toLowerCase();
+  $('qContinent').textContent='📍 '+q.continent;
+  $('qText').textContent=q.q;
+  factPanel.classList.add('hidden');factPanel.textContent='';
   continueBtn.classList.add('hidden');
-  fastBonusEl.classList.remove('show'); fastBonusEl.textContent='';
+  fastBonusEl.classList.remove('show');fastBonusEl.textContent='';
+  timer.limit=q.time;timer.remaining=q.time;
+  timerFill.style.width='100%';timerFill.classList.remove('danger');timerPlane.style.left='100%';
 
-  timer.limit = q.time; timer.remaining = q.time;
-  updateTimerBarInstant();
-
-  if(q.type === 'mcq'){
-    mcqArea.classList.remove('hidden');
-    typeArea.classList.add('hidden');
-    currentOptions = shuffle(q.options.map((text,i)=>({text, correct:i===q.correct})));
-    mcqArea.innerHTML = '';
-    const letters=['A','B','C','D'];
+  if(q.type==='mcq'){
+    mcqArea.classList.remove('hidden');typeArea.classList.add('hidden');
+    currentOptions=shuffle(q.options.map((text,i)=>({text,correct:i===q.correct})));
+    mcqArea.innerHTML='';
     currentOptions.forEach((opt,i)=>{
-      const btn = document.createElement('button');
-      btn.className='answer-btn';
-      btn.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${escapeHtml(opt.text)}</span>`;
-      btn.addEventListener('click', ()=>handleSelect(i));
-      mcqArea.appendChild(btn);
+      const b=document.createElement('button');b.className='answer-btn';
+      b.innerHTML=`<span class="opt-letter">${'ABCD'[i]}</span><span>${escapeHtml(opt.text)}</span>`;
+      b.addEventListener('click',()=>handleSelect(i));mcqArea.appendChild(b);
     });
-  } else {
-    mcqArea.classList.add('hidden');
-    typeArea.classList.remove('hidden');
-    typeInput.value=''; typeInput.disabled=false;
-    typeInput.className=''; 
-    typeReveal.classList.add('hidden'); typeReveal.textContent='';
-    typeCar.style.left='0%';
-    $('typeSubmit').disabled=false;
+  }else{
+    mcqArea.classList.add('hidden');typeArea.classList.remove('hidden');
+    typeInput.value='';typeInput.disabled=false;typeInput.className='';
+    typeReveal.classList.add('hidden');typeReveal.textContent='';
+    typeCar.style.left='0%';$('typeSubmit').disabled=false;
   }
-
-  const completedCount = idx; // # answered correctly so far
-  $('lifeline-fifty').disabled = usedFifty || q.type!=='mcq';
-  $('lifeline-time').disabled = usedExtra;
-  $('lifeline-walk').disabled = completedCount < 1;
-  $('walkLabel').textContent = 'Walk Away';
-  $('walkLabel').nextSibling; 
-  $('walkLabel').parentElement.querySelector('.lf-icon');
-  $('lifeline-walk').title = completedCount>0 ? `Bank ${fmt(LADDER[completedCount-1])}` : '';
-
-  updateHUDScore(completedCount>0 ? LADDER[completedCount-1] : 0);
+  $('lifeline-fifty').disabled=usedFifty||q.type!=='mcq';
+  $('lifeline-time').disabled=usedExtra;
+  $('lifeline-walk').disabled=idx<1;
+  $('lifeline-walk').title=idx>0?`Bank ${fmt(LADDER[idx-1])}`:'';
+  $('hdrScore').textContent=fmt(idx>0?LADDER[idx-1]:0);
   renderLadder();
-
-  setTimeout(()=>{ if(q.type==='type') typeInput.focus(); }, 50);
-}
-
-function updateHUDScore(amount){ $('hdrScore').textContent = fmt(amount); }
-
-function updateTimerBarInstant(){
-  timerFill.style.width='100%';
-  timerFill.classList.remove('danger');
-  timerPlane.style.left='100%';
-}
-
-function updateTimerBar(){
-  const pct = Math.max(0, (timer.remaining/timer.limit)*100);
-  timerFill.style.width = pct+'%';
-  timerPlane.style.left = pct+'%';
-  if(timer.remaining <= 5) timerFill.classList.add('danger');
-  else timerFill.classList.remove('danger');
+  setTimeout(()=>{if(q.type==='type')typeInput.focus();},50);
 }
 
 function handleSelect(idx){
-  if(state!==STATE.PLAYING) return;
-  const q = QUESTIONS[currentQuestionIndex];
-  if(q.type!=='mcq') return;
-  selectedIndex = idx;
-  state = STATE.ANSWERED;
-  sndClick();
-  const btns = mcqArea.querySelectorAll('.answer-btn');
-  btns.forEach(b=>b.style.pointerEvents='none');
-  btns[idx].classList.add('selected');
-  setTimeout(()=>revealAnswer(currentOptions[idx].correct), 450);
+  if(state!==STATE.PLAYING||deck[currentQuestionIndex].type!=='mcq'||!currentOptions[idx])return;
+  selectedIndex=idx;state=STATE.ANSWERED;sndClick();
+  const btns=mcqArea.querySelectorAll('.answer-btn');
+  btns.forEach(b=>b.style.pointerEvents='none');btns[idx].classList.add('selected');
+  setTimeout(()=>revealAnswer(currentOptions[idx].correct),450);
 }
-
 function submitTypeAnswer(){
-  if(state!==STATE.PLAYING) return;
-  const q = QUESTIONS[currentQuestionIndex];
-  if(q.type!=='type') return;
-  state = STATE.ANSWERED;
-  typeInput.disabled=true; $('typeSubmit').disabled=true;
-  sndClick();
-  const norm = normalize(typeInput.value);
-  const correct = norm.length>0 && q.accepted.some(a=>normalize(a)===norm);
-  setTimeout(()=>revealAnswer(correct), 350);
+  if(state!==STATE.PLAYING)return;
+  const q=deck[currentQuestionIndex];if(q.type!=='type')return;
+  state=STATE.ANSWERED;typeInput.disabled=true;$('typeSubmit').disabled=true;sndClick();
+  const n=normalize(typeInput.value);
+  const ok=n.length>0&&q.accepted.some(a=>normalize(a)===n);
+  setTimeout(()=>revealAnswer(ok),350);
 }
 
-function revealAnswer(correct, timedOut){
-  lastAnswerCorrect = correct;
-  const q = QUESTIONS[currentQuestionIndex];
-  let fxTarget = null;
-
+function revealAnswer(correct,timedOut){
+  lastAnswerCorrect=correct;
+  const q=deck[currentQuestionIndex];let fx=null;
   if(q.type==='mcq'){
-    const btns = mcqArea.querySelectorAll('.answer-btn');
-    btns.forEach(b=>b.style.pointerEvents='none');
-    const correctIdx = currentOptions.findIndex(o=>o.correct);
-    btns[correctIdx].classList.add('correct');
-    if(!correct && selectedIndex!==null) btns[selectedIndex].classList.add('wrong');
-    fxTarget = correct ? btns[selectedIndex] : btns[correctIdx];
-  } else {
-    typeReveal.classList.remove('hidden');
-    typeReveal.textContent = '✔ Answer: ' + capitalize(q.accepted[0]);
-    typeInput.classList.add(correct?'input-correct':'input-wrong');
-    fxTarget = $('typeSubmit');
+    const btns=mcqArea.querySelectorAll('.answer-btn');btns.forEach(b=>b.style.pointerEvents='none');
+    const ci=currentOptions.findIndex(o=>o.correct);
+    btns[ci].classList.add('correct');
+    if(!correct&&selectedIndex!==null)btns[selectedIndex].classList.add('wrong');
+    fx=correct?btns[selectedIndex]:btns[ci];
+  }else{
+    typeReveal.classList.remove('hidden');typeReveal.textContent='✔ Answer: '+q.ans;
+    typeInput.classList.add(correct?'input-correct':'input-wrong');fx=$('typeSubmit');
   }
-
-  factPanel.textContent = (timedOut ? "⏰ Time's up! " : "") + q.fact;
-  factPanel.classList.remove('hidden');
-  continueBtn.classList.remove('hidden');
-  continueBtn.textContent = correct ? 'Continue ➜ (Enter)' : 'See Results (Enter)';
-
+  factPanel.textContent=(timedOut?"⏰ Time's up! ":'')+q.fact;
+  factPanel.classList.remove('hidden');continueBtn.classList.remove('hidden');
+  continueBtn.textContent=correct?'Continue ➜ (Enter)':'See Results (Enter)';
   if(correct){
-    const amount = LADDER[currentQuestionIndex];
-    updateHUDScore(amount);
-    burstAt(fxTarget, '#06d6a0', 55);
-    sndCorrect();
-    moveRaceVehicle(currentQuestionIndex+1, true);
-    if(timer.remaining > timer.limit/2) showFastBonus('⚡ FAST!');
-    renderLadderCurrentHighlight();
-  } else {
-    triggerShake(10, 0.4);
-    sndWrong();
-  }
-
-  state = STATE.ANSWERED;
-  canProceed = true;
-  autoProceedTimer = setTimeout(proceed, correct ? 1800 : 2400);
+    $('hdrScore').textContent=fmt(LADDER[currentQuestionIndex]);
+    burstAt(fx,'#06d6a0',55);sndCorrect();moveRaceVehicle(currentQuestionIndex+1,true);
+    if(timer.remaining>timer.limit/2)showFastBonus('⚡ FAST!');
+    const it=ladderPanel.querySelector(`[data-i="${currentQuestionIndex}"]`);if(it)it.classList.add('done');
+  }else{triggerShake(10,.4);sndWrong();}
+  state=STATE.ANSWERED;canProceed=true;
+  autoProceedTimer=setTimeout(proceed,correct?2600:3200);
 }
-
-function renderLadderCurrentHighlight(){
-  // visually bump the just-won ladder item briefly
-  const item = ladderPanel.querySelector(`[data-i="${currentQuestionIndex}"]`);
-  if(item){ item.classList.add('done'); }
-}
-
-function showFastBonus(text){
-  fastBonusEl.textContent = text;
-  fastBonusEl.classList.remove('show');
-  void fastBonusEl.offsetWidth;
-  fastBonusEl.classList.add('show');
-}
+function showFastBonus(t){fastBonusEl.textContent=t;fastBonusEl.classList.remove('show');void fastBonusEl.offsetWidth;fastBonusEl.classList.add('show');}
 
 function handleTimeout(){
-  if(state!==STATE.PLAYING) return;
-  state = STATE.ANSWERED;
-  const q = QUESTIONS[currentQuestionIndex];
-  if(q.type==='mcq'){ mcqArea.querySelectorAll('.answer-btn').forEach(b=>b.style.pointerEvents='none'); }
-  else { typeInput.disabled=true; $('typeSubmit').disabled=true; }
-  setTimeout(()=>revealAnswer(false, true), 200);
+  if(state!==STATE.PLAYING)return;
+  state=STATE.ANSWERED;
+  const q=deck[currentQuestionIndex];
+  if(q.type==='mcq')mcqArea.querySelectorAll('.answer-btn').forEach(b=>b.style.pointerEvents='none');
+  else{typeInput.disabled=true;$('typeSubmit').disabled=true;}
+  setTimeout(()=>revealAnswer(false,true),200);
 }
-
 function proceed(){
   clearTimeout(autoProceedTimer);
-  if(!canProceed) return;
-  canProceed = false;
+  if(!canProceed)return;canProceed=false;
   if(lastAnswerCorrect){
     currentQuestionIndex++;
-    if(currentQuestionIndex >= QUESTIONS.length){ endGame('win'); }
-    else { loadQuestion(currentQuestionIndex); }
-  } else {
-    endGame('lose');
-  }
+    if(currentQuestionIndex>=deck.length)endGame('win');else loadQuestion(currentQuestionIndex);
+  }else endGame('lose');
 }
-
 function fiftyFifty(){
-  if(state!==STATE.PLAYING || usedFifty) return;
-  const q = QUESTIONS[currentQuestionIndex];
-  if(q.type!=='mcq') return;
-  usedFifty = true;
-  $('lifeline-fifty').disabled = true;
-  const wrongIdxs = currentOptions.map((o,i)=>o.correct?-1:i).filter(i=>i>=0);
-  shuffle(wrongIdxs);
-  const toRemove = wrongIdxs.slice(0,2);
-  const btns = mcqArea.querySelectorAll('.answer-btn');
-  toRemove.forEach(i=>btns[i].classList.add('removed'));
-  sndClick();
+  if(state!==STATE.PLAYING||usedFifty||deck[currentQuestionIndex].type!=='mcq')return;
+  usedFifty=true;$('lifeline-fifty').disabled=true;
+  const wrong=shuffle(currentOptions.map((o,i)=>o.correct?-1:i).filter(i=>i>=0)).slice(0,2);
+  const btns=mcqArea.querySelectorAll('.answer-btn');wrong.forEach(i=>btns[i].classList.add('removed'));sndClick();
 }
-
 function extraTime(){
-  if(state!==STATE.PLAYING || usedExtra) return;
-  usedExtra = true;
-  $('lifeline-time').disabled = true;
-  timer.remaining += 10; timer.limit += 10;
-  showFastBonus('+10s ⏱️');
-  sndClick();
+  if(state!==STATE.PLAYING||usedExtra)return;
+  usedExtra=true;$('lifeline-time').disabled=true;timer.remaining+=10;timer.limit+=10;showFastBonus('+10s ⏱️');sndClick();
 }
-
-function walkAway(){
-  if(state!==STATE.PLAYING) return;
-  if(currentQuestionIndex < 1) return;
-  endGame('walk');
-}
+function walkAway(){if(state!==STATE.PLAYING||currentQuestionIndex<1)return;endGame('walk');}
 
 function endGame(result){
-  state = STATE.GAMEOVER;
-  clearTimeout(autoProceedTimer);
-  let completedCount = currentQuestionIndex;
-  let finalAmount = 0;
-
-  if(result==='win'){ finalAmount = LADDER[19]; completedCount = 20; }
-  else if(result==='walk'){ finalAmount = completedCount>0 ? LADDER[completedCount-1] : 0; }
-  else {
-    if(completedCount>=15) finalAmount = LADDER[14];
-    else if(completedCount>=10) finalAmount = LADDER[9];
-    else if(completedCount>=5) finalAmount = LADDER[4];
-    else finalAmount = 0;
-  }
-  showGameOver(result, finalAmount, completedCount);
+  state=STATE.GAMEOVER;clearTimeout(autoProceedTimer);
+  let done=currentQuestionIndex,amt=0;
+  if(result==='win'){amt=LADDER[19];done=20;}
+  else if(result==='walk')amt=done>0?LADDER[done-1]:0;
+  else amt=done>=15?LADDER[14]:done>=10?LADDER[9]:done>=5?LADDER[4]:0;
+  finalCompleted=done;
+  showGameOver(result,amt,done);
+}
+function showGameOver(result,amount,done){
+  const info=getTitleInfo(done,result==='win');
+  $('goTrophy').textContent=info.icon;$('goTitle').textContent=info.title;
+  $('goHeadline').textContent=result==='win'?'🏆 YOU WON!':result==='walk'?'💰 You Walked Away':'❌ Game Over';
+  const rv=$('goCorrectReveal');
+  if(result==='lose'){const q=deck[done];rv.textContent='Correct answer was: '+(q.type==='mcq'?q.options[q.correct]:q.ans);rv.classList.remove('hidden');}
+  else rv.classList.add('hidden');
+  animateNumber($('goAmount'),amount,900);
+  if(result==='win'){winConfetti();sndWin();}
+  else if(result==='walk')spawnParticles(innerWidth/2,innerHeight/2,'#ffd166',60,{gravity:.12,life:70});
+  $('nameInput').value=store.get('grLastName','');
+  $('saveScoreBtn').disabled=false;$('saveScoreBtn').textContent='Save';
+  renderHS('hsTable');$('overlayGameOver').classList.add('active');
+}
+function animateNumber(el,to,dur){
+  const s=performance.now();
+  (function step(now){const t=Math.min(1,(now-s)/dur);el.textContent=fmt(Math.round(to*(1-Math.pow(1-t,3))));if(t<1)requestAnimationFrame(step);})(s);
 }
 
-function showGameOver(result, amount, completedCount){
-  const info = getTitleInfo(completedCount, result==='win');
-  $('goTrophy').textContent = info.icon;
-  $('goTitle').textContent = info.title;
-
-  let headline = 'Game Over';
-  if(result==='win') headline = '🏆 YOU WON!';
-  else if(result==='walk') headline = '💰 You Walked Away';
-  else headline = '❌ Game Over';
-  $('goHeadline').textContent = headline;
-
-  const reveal = $('goCorrectReveal');
-  if(result==='lose'){
-    const q = QUESTIONS[completedCount];
-    let correctText;
-    if(q.type==='mcq') correctText = q.options[q.correct];
-    else correctText = capitalize(q.accepted[0]);
-    reveal.textContent = 'Correct answer was: ' + correctText;
-    reveal.classList.remove('hidden');
-  } else {
-    reveal.classList.add('hidden');
-  }
-
-  animateNumber($('goAmount'), 0, amount, 900);
-
-  if(result==='win'){ triggerWinConfetti(); sndWin(); }
-  else if(result==='walk'){ spawnParticles(window.innerWidth/2, window.innerHeight/2, '#ffd166', 60, {gravity:0.12, life:70}); }
-
-  $('nameInput').value = localStorage.getItem('grLastName') || '';
-  $('saveScoreBtn').disabled = false;
-  $('saveScoreBtn').textContent = 'Save';
-  renderHighScoreTable('hsTable');
-
-  $('overlayGameOver').classList.add('active');
-}
-
-function animateNumber(el, from, to, duration){
-  const start = performance.now();
-  function step(now){
-    const t = Math.min(1, (now-start)/duration);
-    const eased = 1 - Math.pow(1-t, 3);
-    const val = Math.round(from + (to-from)*eased);
-    el.textContent = fmt(val);
-    if(t<1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
-}
-
-/* ============================= PAUSE ============================= */
+/* ===================== PAUSE / MENU ===================== */
 function pauseGame(){
-  if(state!==STATE.PLAYING && state!==STATE.ANSWERED) return;
-  if(state===STATE.PAUSED) return;
-  window._prevState = state;
-  state = STATE.PAUSED;
-  $('overlayPause').classList.add('active');
+  if(state!==STATE.PLAYING&&state!==STATE.ANSWERED)return;
+  prevState=state;state=STATE.PAUSED;$('overlayPause').classList.add('active');
 }
-function resumeGame(){
-  if(state!==STATE.PAUSED) return;
-  state = window._prevState || STATE.PLAYING;
-  $('overlayPause').classList.remove('active');
-}
-function restartGame(){
-  $('overlayPause').classList.remove('active');
-  $('overlayGameOver').classList.remove('active');
-  initGame();
-}
+function resumeGame(){if(state!==STATE.PAUSED)return;state=prevState||STATE.PLAYING;$('overlayPause').classList.remove('active');}
+function restartGame(){$('overlayPause').classList.remove('active');$('overlayGameOver').classList.remove('active');clearTimeout(autoProceedTimer);initGame();}
 function quitToMenu(){
-  $('overlayPause').classList.remove('active');
-  $('overlayGameOver').classList.remove('active');
-  state = STATE.START;
-  switchScreen('start');
-  renderStartHighScores();
+  $('overlayPause').classList.remove('active');$('overlayGameOver').classList.remove('active');
+  clearTimeout(autoProceedTimer);state=STATE.START;switchScreen('start');renderStartHS();
 }
 
-/* ============================= MAIN LOOP ============================= */
-let lastTs = null;
+/* ===================== LOOP ===================== */
+let lastTs=null;
 function loop(ts){
-  if(lastTs===null) lastTs = ts;
-  const dt = Math.min((ts-lastTs)/1000, 0.05);
-  lastTs = ts;
-
+  if(lastTs===null)lastTs=ts;
+  const dt=Math.min((ts-lastTs)/1000,.05);lastTs=ts;
   if(state===STATE.PLAYING){
-    const prevSec = Math.ceil(timer.remaining);
-    timer.remaining -= dt;
-    if(timer.remaining < 0) timer.remaining = 0;
-    updateTimerBar();
-    const nowSec = Math.ceil(timer.remaining);
-    if(nowSec < prevSec && nowSec <= 5 && nowSec > 0) sndTick();
-    if(timer.remaining <= 0){ handleTimeout(); }
+    const prev=Math.ceil(timer.remaining);
+    timer.remaining=Math.max(0,timer.remaining-dt);
+    const pct=(timer.remaining/timer.limit)*100;
+    timerFill.style.width=pct+'%';timerPlane.style.left=pct+'%';
+    timerFill.classList.toggle('danger',timer.remaining<=5);
+    const now=Math.ceil(timer.remaining);
+    if(now<prev&&now<=5&&now>0)sndTick();
+    if(timer.remaining<=0)handleTimeout();
   }
-  updateShake(dt);
-  updateParticles(dt);
-  requestAnimationFrame(loop);
+  updateShake(dt);updateParticles(dt);requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
 
-/* ============================= EVENTS ============================= */
-$('startBtn').addEventListener('click', ()=>{ ensureAudio(); initGame(); });
-$('muteBtnStart').addEventListener('click', toggleMute);
-$('muteBtnGame').addEventListener('click', toggleMute);
-$('pauseBtn').addEventListener('click', pauseGame);
-$('resumeBtn').addEventListener('click', resumeGame);
-$('restartFromPauseBtn').addEventListener('click', restartGame);
-$('menuFromPauseBtn').addEventListener('click', quitToMenu);
-$('restartBtn').addEventListener('click', restartGame);
-$('menuBtn').addEventListener('click', quitToMenu);
-$('continueBtn').addEventListener('click', proceed);
-$('typeSubmit').addEventListener('click', submitTypeAnswer);
-$('lifeline-fifty').addEventListener('click', fiftyFifty);
-$('lifeline-time').addEventListener('click', extraTime);
-$('lifeline-walk').addEventListener('click', walkAway);
+/* ===================== EVENTS ===================== */
+$('startBtn').addEventListener('click',()=>{ensureAudio();initGame();});
+$('muteBtnStart').addEventListener('click',toggleMute);$('muteBtnGame').addEventListener('click',toggleMute);
+$('pauseBtn').addEventListener('click',pauseGame);$('resumeBtn').addEventListener('click',resumeGame);
+$('restartFromPauseBtn').addEventListener('click',restartGame);$('menuFromPauseBtn').addEventListener('click',quitToMenu);
+$('restartBtn').addEventListener('click',restartGame);$('menuBtn').addEventListener('click',quitToMenu);
+continueBtn.addEventListener('click',proceed);$('typeSubmit').addEventListener('click',submitTypeAnswer);
+$('lifeline-fifty').addEventListener('click',fiftyFifty);$('lifeline-time').addEventListener('click',extraTime);$('lifeline-walk').addEventListener('click',walkAway);
+$('ladderToggleBtn').addEventListener('click',()=>ladderPanel.classList.toggle('open'));
 
-$('ladderToggleBtn').addEventListener('click', ()=> ladderPanel.classList.toggle('open'));
-
-typeInput.addEventListener('input', ()=>{
-  const q = QUESTIONS[currentQuestionIndex];
-  if(!q || q.type!=='type') return;
-  const estLen = Math.max(...q.accepted.map(a=>a.length));
-  const pct = Math.min(100, (typeInput.value.length/estLen)*100);
-  typeCar.style.left = pct+'%';
+typeInput.addEventListener('input',()=>{
+  const q=deck[currentQuestionIndex];if(!q||q.type!=='type')return;
+  const est=Math.max(...q.accepted.map(a=>a.length));
+  typeCar.style.left=Math.min(100,typeInput.value.length/est*100)+'%';
 });
-typeInput.addEventListener('keydown', e=>{
-  if(e.key==='Enter'){ e.preventDefault(); submitTypeAnswer(); }
+typeInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submitTypeAnswer();}});
+
+$('saveScoreBtn').addEventListener('click',()=>{
+  const name=$('nameInput').value.trim()||'Player';
+  store.set('grLastName',name);
+  addScore(name,parseInt($('goAmount').textContent.replace(/[^0-9]/g,'')||'0',10),finalCompleted);
+  renderHS('hsTable');$('saveScoreBtn').disabled=true;$('saveScoreBtn').textContent='Saved ✓';
 });
 
-$('saveScoreBtn').addEventListener('click', ()=>{
-  const name = $('nameInput').value.trim() || 'Player';
-  localStorage.setItem('grLastName', name);
-  const amountText = $('goAmount').textContent.replace(/[^0-9]/g,'');
-  const amount = parseInt(amountText||'0',10);
-  addScore(name, amount, currentQuestionIndex===0 && lastAnswerCorrect===false ? 0 : currentQuestionIndex);
-  renderHighScoreTable('hsTable');
-  $('saveScoreBtn').disabled = true;
-  $('saveScoreBtn').textContent = 'Saved ✓';
-});
-
-document.addEventListener('keydown', e=>{
-  if(e.target && e.target.tagName==='INPUT'){
-    if(e.key==='Escape') e.target.blur();
-    return;
-  }
-  const key = e.key;
-  if(state===STATE.START){
-    if(key==='Enter' || key===' '){ e.preventDefault(); ensureAudio(); initGame(); }
-    return;
-  }
+document.addEventListener('keydown',e=>{
+  if(e.target&&e.target.tagName==='INPUT'){if(e.key==='Escape')e.target.blur();return;}
+  const k=e.key,kl=k.toLowerCase();
+  if(state===STATE.START){if(k==='Enter'||k===' '){e.preventDefault();ensureAudio();initGame();}return;}
   if(state===STATE.PLAYING){
-    if(['1','2','3','4'].includes(key)) handleSelect(Number(key)-1);
-    else if(['a','b','c','d'].includes(key.toLowerCase())) handleSelect('abcd'.indexOf(key.toLowerCase()));
-    else if(key.toLowerCase()==='p' || key==='Escape') pauseGame();
-    else if(key.toLowerCase()==='f') fiftyFifty();
-    else if(key.toLowerCase()==='t') extraTime();
-    else if(key.toLowerCase()==='w') walkAway();
+    if('1234'.includes(k)&&k.length===1)handleSelect(+k-1);
+    else if(kl.length===1&&'abcd'.includes(kl))handleSelect('abcd'.indexOf(kl));
+    else if(kl==='p'||k==='Escape')pauseGame();
+    else if(kl==='f')fiftyFifty();else if(kl==='t')extraTime();else if(kl==='w')walkAway();
     return;
   }
-  if(state===STATE.ANSWERED){
-    if(key==='Enter' || key===' '){ e.preventDefault(); proceed(); }
-    return;
-  }
-  if(state===STATE.PAUSED){
-    if(key==='Escape' || key.toLowerCase()==='p') resumeGame();
-    else if(key.toLowerCase()==='r') restartGame();
-    return;
-  }
-  if(state===STATE.GAMEOVER){
-    if(key==='Enter') restartGame();
-  }
+  if(state===STATE.ANSWERED){if(k==='Enter'||k===' '){e.preventDefault();proceed();}else if(kl==='p')pauseGame();return;}
+  if(state===STATE.PAUSED){if(k==='Escape'||kl==='p')resumeGame();else if(kl==='r')restartGame();return;}
+  if(state===STATE.GAMEOVER&&k==='Enter')restartGame();
 });
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&state===STATE.PLAYING)pauseGame();});
 
-document.addEventListener('visibilitychange', ()=>{
-  if(document.hidden && state===STATE.PLAYING) pauseGame();
-});
-
-/* ============================= INIT ============================= */
-updateMuteIcons();
-renderStartHighScores();
-updateRaceTrackMarkers();
-
+updateMuteIcons();renderStartHS();updateRaceTrackMarkers();
 })();
 </script>
 </body>
